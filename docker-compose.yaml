@@ -14,7 +14,7 @@ services:
     profiles:
       - production
     build:
-      context: src
+      context: .
     environment:
       DB_HOST: postgres
       DB_NAME: library
