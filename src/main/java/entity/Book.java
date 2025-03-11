@@ -1,6 +1,7 @@
 package entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Past;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.proxy.HibernateProxy;
 
@@ -8,44 +9,39 @@ import java.util.Date;
 import java.util.Objects;
 
 @Entity
-@Table(name = "book", schema = "library")
+@Table(name = "book")
 public class Book {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "bookID", unique = true, nullable = false)
     private Long bookID;
 
-    @Column(name="bookTitle")
+    @Column(name="bookTitle", nullable = false)
     private String bookTitle;
 
-    @Column(name="bookAuthour")
+    @Column(name="bookAuthor", nullable = false)
     private String bookAuthor;
 
-    @Column(name="bookISBN")
+    @Column(name="bookISBN",  nullable = false)
     private String bookIsbn;
 
-    @Column(name="bookDescription")
+    @Column(name="bookDescription", nullable = false)
     private String bookDescription;
 
-    @Column(name="bookPageNumber")
+    @Column(name="bookPageNumber", nullable = false)
     private Long bookPagesNumber;
 
-    @Column(name="bookPublishDate")
+    @Past
+    @Column(name="bookPublishDate",  nullable = false)
     private Date bookPublishDate;
 
-    @ColumnDefault("(((bookauthour)) || (booktitle))")
-    @Column(name = "bookauthortitle", length = Integer.MAX_VALUE)
-    private String bookauthortitle;
 
-    public String getBookauthortitle() {
-        return bookauthortitle;
-    }
-
-    public void setBookauthortitle(String bookauthortitle) {
-        this.bookauthortitle = bookauthortitle;
-    }
 
     public Long getBookID() {
         return bookID;
+    }
+    public void setBookID(Long bookID) {
+        this.bookID = bookID;
     }
 
     public String getBookTitle() {
@@ -120,7 +116,6 @@ public class Book {
                 ", bookDescription='" + bookDescription + '\'' +
                 ", bookPagesNumber=" + bookPagesNumber +
                 ", bookPublishDate=" + bookPublishDate +
-                ", bookauthortitle='" + bookauthortitle + '\'' +
                 '}';
     }
 }
