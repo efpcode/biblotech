@@ -1,6 +1,8 @@
 package business;
 
 import dto.BookResponse;
+import dto.CreateBook;
+import entity.Book;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import persistence.BookRepository;
@@ -28,4 +30,11 @@ public class BookService {
                 .filter(Objects::nonNull)
                 .toList();
     }
+
+
+    public Book createBook(CreateBook createBook) {
+
+    }
+
+
 }

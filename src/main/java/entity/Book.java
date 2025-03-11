@@ -2,10 +2,8 @@ package entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Past;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.proxy.HibernateProxy;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
@@ -33,7 +31,7 @@ public class Book {
 
     @Past
     @Column(name="bookPublishDate",  nullable = false)
-    private Date bookPublishDate;
+    private LocalDate bookPublishDate;
 
 
 
@@ -84,14 +82,13 @@ public class Book {
         this.bookPagesNumber = bookPagesNumber;
     }
 
-    public Date getBookPublishDate() {
+    public LocalDate getBookPublishDate() {
         return bookPublishDate;
     }
 
-    public void setBookPublishDate(Date bookPublishDate) {
+    public void setBookPublishDate(LocalDate bookPublishDate) {
         this.bookPublishDate = bookPublishDate;
     }
-
 
     @Override
     public final boolean equals(Object o) {

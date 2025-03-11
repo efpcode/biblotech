@@ -26,7 +26,7 @@ public class BookResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public BookListResponse getAllBooks() {
+    public BookListResponse getBooks() {
         return new BookListResponse(bookService.getAllBooks());
     }
 
