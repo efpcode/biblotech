@@ -2,6 +2,7 @@ package entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Past;
+import rules.ValidBookTitle;
 
 import java.time.LocalDate;
 import java.util.Objects;

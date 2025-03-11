@@ -2,11 +2,13 @@ package presentation;
 
 import business.BookService;
 import dto.BookListResponse;
+import dto.CreateBook;
+import entity.Book;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.validation.Valid;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import lombok.extern.java.Log;
 
 
@@ -28,6 +30,23 @@ public class BookResource {
     @Produces(MediaType.APPLICATION_JSON)
     public BookListResponse getBooks() {
         return new BookListResponse(bookService.getAllBooks());
+    }
+
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response createBook(@Valid CreateBook book) {
+        if (book == null) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        Book newBook = bookService.createBook(book);
+        log.info("Book created: " + newBook);
+        return Response
+                .status(Response.Status.CREATED)
+                .header("Location", "/api/books" + newBook.getBookID())
+                .build();
+
     }
 
 

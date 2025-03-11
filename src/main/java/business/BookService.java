@@ -10,6 +10,8 @@ import persistence.BookRepository;
 import java.util.List;
 import java.util.Objects;
 
+import static mapper.BookMapper.mapToBook;
+
 @ApplicationScoped
 public class BookService {
     private BookRepository bookRepository;
@@ -32,7 +34,10 @@ public class BookService {
     }
 
 
-    public Book createBook(CreateBook createBook) {
+    public Book createBook(CreateBook book) {
+        var newBook = mapToBook(book);
+        newBook =  bookRepository.insert(newBook);
+        return newBook;
 
     }
 

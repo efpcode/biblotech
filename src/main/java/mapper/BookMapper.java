@@ -7,7 +7,7 @@ import entity.Book;
 public class BookMapper {
     private BookMapper() {}
 
-    public static BookResponse maptoBookResponse(Book book) {
+    public static BookResponse mapToBookResponse(Book book) {
         if (book == null) {
             return null;
         }
@@ -22,7 +22,7 @@ public class BookMapper {
         );
     }
 
-    public static Book maptoBook(CreateBook book) {
+    public static Book mapToBook(CreateBook book) {
         if (book == null) {
             return null;
         }
