@@ -1,14 +1,19 @@
 package entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
 import rules.ValidBookTitle;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
-@Table(name = "book")
+@Table(
+        name = "book",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"bookTitle","bookAuthor"})
+)
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,6 +21,8 @@ public class Book {
     private Long bookID;
 
     @Column(name="bookTitle", nullable = false)
+    @ValidBookTitle
+    @Valid
     private String bookTitle;
 
     @Column(name="bookAuthor", nullable = false)
@@ -24,13 +31,14 @@ public class Book {
     @Column(name="bookISBN",  nullable = false)
     private String bookIsbn;
 
+    @Size(min = 1, max = 1000)
     @Column(name="bookDescription", nullable = false)
     private String bookDescription;
 
     @Column(name="bookPageNumber", nullable = false)
     private Long bookPagesNumber;
 
-    @Past
+    @Past(message = "Publishing date for book must be in the past")
     @Column(name="bookPublishDate",  nullable = false)
     private LocalDate bookPublishDate;
 

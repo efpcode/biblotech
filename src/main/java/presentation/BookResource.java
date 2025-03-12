@@ -2,6 +2,7 @@ package presentation;
 
 import business.BookService;
 import dto.BookListResponse;
+import dto.BookResponse;
 import dto.CreateBook;
 import entity.Book;
 import jakarta.inject.Inject;
@@ -31,6 +32,11 @@ public class BookResource {
     public BookListResponse getBooks() {
         return new BookListResponse(bookService.getAllBooks());
     }
+
+    @GET
+    @Path("{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public BookResponse getBook(@PathParam("id") Long id){return bookService.getBookById(id);}
 
 
     @POST

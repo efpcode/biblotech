@@ -42,4 +42,9 @@ public class BookService {
     }
 
 
+    public BookResponse getBookById(Long id) {
+       return bookRepository.findById(id)
+                .map(BookResponse::new)
+                .orElseThrow(() -> new RuntimeException("Book with id " + id + " not found"));
+    }
 }

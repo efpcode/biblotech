@@ -6,7 +6,12 @@
         <jta-data-source>java:/PostgresDS</jta-data-source>
         <properties>
             <!-- Schema generation options -->
-            <property name="jakarta.persistence.schema-generation.database.action" value="none"/>
+            <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
+
+            <!-- Hibernate properties -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+
+
             <!-- SQL logging -->
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
