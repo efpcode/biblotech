@@ -10,10 +10,9 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = {ValidBookTitleValidator.class})
-public @interface ValidBookTitle {
-    String message() default "Not a valid book title";
-    Class<?>[] groups() default{};
+@Constraint(validatedBy = {ValidBookPublishDateValidator.class})
+public @interface ValidBookPublishDate {
+    String message() default "Publication Date is invalid";
+    Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
-
 }

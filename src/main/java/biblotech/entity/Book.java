@@ -1,9 +1,12 @@
 package biblotech.entity;
 
+import biblotech.rules.ValidBookAuthor;
+import biblotech.rules.ValidBookISBN;
+import biblotech.rules.ValidBookPublishDate;
+import jakarta.json.bind.annotation.JsonbDateFormat;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import biblotech.rules.ValidBookTitle;
 
 import java.time.LocalDate;
@@ -26,20 +29,29 @@ public class Book {
     private String bookTitle;
 
     @Column(name="bookAuthor", nullable = false)
+    @ValidBookAuthor
+    @Valid
     private String bookAuthor;
 
     @Column(name="bookISBN",  nullable = false)
+    @ValidBookISBN
+    @Valid
     private String bookIsbn;
 
     @Size(min = 1, max = 1000)
+    @NotBlank(message = "Description cannot be empty or null")
     @Column(name="bookDescription", nullable = false)
     private String bookDescription;
 
+    @Positive(message = "Number of pages must be greater than zero")
     @Column(name="bookPageNumber", nullable = false)
     private Long bookPagesNumber;
 
-    @Past(message = "Publishing date for book must be in the past")
+    @JsonbDateFormat(value = "yyyy-MM-dd") // Specify the expected date format
+    @PastOrPresent(message = "Publishing date for book must be in the past")
     @Column(name="bookPublishDate",  nullable = false)
+    @ValidBookPublishDate
+    @Valid
     private LocalDate bookPublishDate;
 
 
