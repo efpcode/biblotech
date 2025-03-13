@@ -15,7 +15,7 @@ import java.util.Objects;
 @Entity
 @Table(
         name = "book",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"bookTitle","bookAuthor"})
+        uniqueConstraints = @UniqueConstraint(columnNames = {"bookTitle", "bookAuthor"})
 )
 public class Book {
     @Id
@@ -33,7 +33,7 @@ public class Book {
     @Valid
     private String bookAuthor;
 
-    @Column(name="bookISBN",  nullable = false)
+    @Column(name="bookISBN",  nullable = false,  unique = true)
     @ValidBookISBN
     @Valid
     private String bookIsbn;

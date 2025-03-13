@@ -42,9 +42,6 @@ public class BookResource {
 
     /**
      * GET /books/search?title=YourBookTitle&author=YourBookAuthor
-     * @param title
-     * @param author
-     * @return
      */
     @GET
     @Path("search")

@@ -3,20 +3,15 @@ package biblotech.business;
 import biblotech.dto.BookResponse;
 import biblotech.dto.CreateBook;
 import biblotech.entity.Book;
-import biblotech.rules.ValidBookAuthor;
-import biblotech.rules.ValidBookTitle;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import biblotech.persistence.BookRepository;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import static biblotech.mapper.BookMapper.mapToBook;
-import static biblotech.mapper.BookMapper.mapToBookResponse;
 
 @ApplicationScoped
 public class BookService {
@@ -42,6 +37,9 @@ public class BookService {
 
     public Book createBook(CreateBook book) {
         var newBook = mapToBook(book);
+        if (getBookByISBN(newBook.getBookIsbn()).isPresent()) {
+            throw new RuntimeException("Book with ISBN " + newBook.getBookIsbn() + " already exists");
+        }
         newBook =  bookRepository.insert(newBook);
         return newBook;
 
@@ -59,6 +57,10 @@ public class BookService {
        return bookRepository.findById(id)
                 .map(BookResponse::new)
                 .orElseThrow(() -> new RuntimeException("Book with id " + id + " not found"));
+    }
+
+    public Optional<Book> getBookByISBN(String bookISBN) {
+        return bookRepository.findByISBN(bookISBN);
     }
 
 }
