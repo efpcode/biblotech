@@ -3,8 +3,6 @@ package biblotech.rules;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ValidBookAuthorValidator implements ConstraintValidator<ValidBookAuthor, String> {
     @Override
@@ -18,15 +16,12 @@ public class ValidBookAuthorValidator implements ConstraintValidator<ValidBookAu
         if(isAuthorValid(bookAuthor)) {
             return true;
         }
-        constraintValidatorContext.buildConstraintViolationWithTemplate("Book Author is not valid format").addPropertyNode("author").addConstraintViolation();
+        constraintValidatorContext.buildConstraintViolationWithTemplate("Book Author is not valid format first letter must be uppercase").addPropertyNode("author").addConstraintViolation();
         return false;
     }
 
     private boolean isAuthorValid(String authorName){
-        String regexPattern = "^([A-Z][a-z]*\\.)?\\s?[A-Z][a-z]+$";
-        Pattern pattern = Pattern.compile(regexPattern);
-        Matcher matcher = pattern.matcher(authorName);
-        return matcher.matches();
+        return Character.isUpperCase(authorName.charAt(0));
 
     }
 }

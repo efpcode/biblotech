@@ -5,6 +5,8 @@ import biblotech.dto.BookListResponse;
 import biblotech.dto.BookResponse;
 import biblotech.dto.CreateBook;
 import biblotech.entity.Book;
+import biblotech.rules.ValidBookAuthor;
+import biblotech.rules.ValidBookTitle;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -37,6 +39,19 @@ public class BookResource {
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public BookResponse getBook(@PathParam("id") Long id){return bookService.getBookById(id);}
+
+    /**
+     * GET /books/search?title=YourBookTitle&author=YourBookAuthor
+     * @param title
+     * @param author
+     * @return
+     */
+    @GET
+    @Path("search")
+    @Produces(MediaType.APPLICATION_JSON)
+    public BookResponse getBooksByTitleAndAuthor(@Valid @ValidBookTitle @QueryParam("title")  String title, @ValidBookAuthor @QueryParam("author") String author){
+            return bookService.getBookByTitleAndAuthor(title, author);
+    }
 
 
     @POST

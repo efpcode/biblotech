@@ -34,7 +34,7 @@ public class ValidBookTitleValidator implements ConstraintValidator<ValidBookTit
 
     private boolean isTitleValidFormatted(String title){
 
-        String regex = "^([A-Z][a-z0-9]*)(\\s[a-z0-9]+)*(\\s[A-Z][a-z0-9]+)*$";
+        String regex = "^[A-Za-z0-9]+(?:[\\s][A-Za-z0-9]+)*$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(title);
         return matcher.matches();
