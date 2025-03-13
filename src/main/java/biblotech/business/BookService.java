@@ -1,16 +1,16 @@
-package business;
+package biblotech.business;
 
-import dto.BookResponse;
-import dto.CreateBook;
-import entity.Book;
+import biblotech.dto.BookResponse;
+import biblotech.dto.CreateBook;
+import biblotech.entity.Book;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import persistence.BookRepository;
+import biblotech.persistence.BookRepository;
 
 import java.util.List;
 import java.util.Objects;
 
-import static mapper.BookMapper.mapToBook;
+import static biblotech.mapper.BookMapper.mapToBook;
 
 @ApplicationScoped
 public class BookService {

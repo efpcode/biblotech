@@ -1,4 +1,4 @@
-package dto;
+package biblotech.dto;
 
 import java.util.List;
 

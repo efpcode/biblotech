@@ -1,8 +1,8 @@
-package mapper;
+package biblotech.mapper;
 
-import dto.BookResponse;
-import dto.CreateBook;
-import entity.Book;
+import biblotech.dto.BookResponse;
+import biblotech.dto.CreateBook;
+import biblotech.entity.Book;
 
 public class BookMapper {
     private BookMapper() {}

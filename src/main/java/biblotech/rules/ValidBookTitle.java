@@ -1,4 +1,4 @@
-package rules;
+package biblotech.rules;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
@@ -10,10 +10,10 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = {ValidBookISBNValidator.class})
-public @interface ValidBookISBN {
-        String message() default "Not a valid book isbn";
-        Class<?>[] groups() default{};
-        Class<? extends Payload>[] payload() default {};
+@Constraint(validatedBy = {ValidBookValidator.class})
+public @interface ValidBookTitle {
+    String message() default "Not a valid book title";
+    Class<?>[] groups() default{};
+    Class<? extends Payload>[] payload() default {};
 
-    }
+}

@@ -1,10 +1,10 @@
-package presentation;
+package biblotech.presentation;
 
-import business.BookService;
-import dto.BookListResponse;
-import dto.BookResponse;
-import dto.CreateBook;
-import entity.Book;
+import biblotech.business.BookService;
+import biblotech.dto.BookListResponse;
+import biblotech.dto.BookResponse;
+import biblotech.dto.CreateBook;
+import biblotech.entity.Book;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -50,7 +50,7 @@ public class BookResource {
         log.info("Book created: " + newBook);
         return Response
                 .status(Response.Status.CREATED)
-                .header("Location", "/api/books" + newBook.getBookID())
+                .header("Location", "/api/books/" + newBook.getBookID())
                 .build();
 
     }

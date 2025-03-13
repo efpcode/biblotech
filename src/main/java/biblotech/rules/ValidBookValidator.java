@@ -1,4 +1,4 @@
-package rules;
+package biblotech.rules;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

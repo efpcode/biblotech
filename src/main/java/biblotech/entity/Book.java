@@ -1,10 +1,10 @@
-package entity;
+package biblotech.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
-import rules.ValidBookTitle;
+import biblotech.rules.ValidBookTitle;
 
 import java.time.LocalDate;
 import java.util.Objects;

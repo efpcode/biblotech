@@ -1,7 +1,7 @@
-package dto;
+package biblotech.dto;
 
-import rules.ValidBookISBN;
-import rules.ValidBookTitle;
+import biblotech.rules.ValidBookISBN;
+import biblotech.rules.ValidBookTitle;
 
 import java.time.LocalDate;
 

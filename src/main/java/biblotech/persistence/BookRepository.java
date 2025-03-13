@@ -1,6 +1,6 @@
-package persistence;
+package biblotech.persistence;
 
-import entity.Book;
+import biblotech.entity.Book;
 import jakarta.data.repository.CrudRepository;
 import jakarta.data.repository.Repository;
 

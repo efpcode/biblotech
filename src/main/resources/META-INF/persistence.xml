@@ -8,9 +8,6 @@
             <!-- Schema generation options -->
             <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
 
-            <!-- Hibernate properties -->
-            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
-
 
             <!-- SQL logging -->
             <property name="hibernate.show_sql" value="true"/>

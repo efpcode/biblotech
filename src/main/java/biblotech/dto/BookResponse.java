@@ -1,5 +1,5 @@
-package dto;
-import entity.Book;
+package biblotech.dto;
+import biblotech.entity.Book;
 import java.time.LocalDate;
 
 public record BookResponse (Long id, String title, String author, String isbn, String description, LocalDate publishedYear, Long pages
