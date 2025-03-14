@@ -5,6 +5,7 @@ import biblotech.dto.BookListResponse;
 import biblotech.dto.BookResponse;
 import biblotech.dto.CreateBook;
 import biblotech.entity.Book;
+import biblotech.exceptions.NullParameterError;
 import biblotech.rules.ValidBookAuthor;
 import biblotech.rules.ValidBookTitle;
 import jakarta.inject.Inject;
@@ -39,6 +40,19 @@ public class BookResource {
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public BookResponse getBook(@PathParam("id") Long id){return bookService.getBookById(id);}
+
+    @GET
+    @Path("book")
+    @Produces(MediaType.APPLICATION_JSON)
+    public BookResponse getOneBook(@QueryParam("id") Long id, @QueryParam("isbn") String isbn){
+        if (id != null) {
+            return bookService.getBookById(id);
+        } else if (isbn != null) {
+            return bookService.getOneBookByISBN(isbn);
+        }else{
+            throw new NullParameterError("The id or ISBN is required least one of the required parameters");
+        }
+    }
 
     /**
      * GET /books/search?title=YourBookTitle&author=YourBookAuthor

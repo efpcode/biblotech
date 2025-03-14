@@ -29,7 +29,7 @@ public class BookMapper {
         Book newBook = new Book();
         newBook.setBookTitle(book.title());
         newBook.setBookAuthor(book.author());
-        newBook.setBookIsbn(book.isbn());
+        newBook.setBookIsbn(ISBNMapper.mapToBook(book.isbn()));
         newBook.setBookDescription(book.description());
         newBook.setBookPublishDate(book.bookPublishDate());
         newBook.setBookPagesNumber(book.bookPagesNumber());
