@@ -2,6 +2,7 @@ package biblotech.presentation;
 
 import biblotech.business.BookService;
 import biblotech.dto.BookListResponse;
+import biblotech.dto.SortedBookPageResponse;
 import biblotech.dto.BookResponse;
 import biblotech.dto.CreateBook;
 import biblotech.entity.Book;
@@ -10,6 +11,7 @@ import biblotech.rules.ValidBookAuthor;
 import biblotech.rules.ValidBookTitle;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -42,7 +44,7 @@ public class BookResource {
     public BookResponse getBook(@PathParam("id") Long id){return bookService.getBookById(id);}
 
     @GET
-    @Path("book")
+    @Path("book-by-id-or-isbn")
     @Produces(MediaType.APPLICATION_JSON)
     public BookResponse getOneBook(@QueryParam("id") Long id, @QueryParam("isbn") String isbn){
         if (id != null) {
@@ -65,6 +67,24 @@ public class BookResource {
     }
 
 
+    /**
+     * GET /books/authors?author=StringPattern&pageNumber=Integer&pageSize=Integer
+     */
+    @GET
+    @Path("authors")
+    @Produces(MediaType.APPLICATION_JSON)
+    public SortedBookPageResponse getBooksByAuthorSortedByTitleDesc(
+            @Valid @ValidBookAuthor @QueryParam("author") String author,
+            @Valid @Positive @QueryParam("pageNumber") Long pageNumber,
+            @Valid @Positive @QueryParam("pageSize") Integer pageSize
+            ){
+        return bookService.getBooksByAuthor(author, pageNumber, pageSize);
+
+    }
+
+
+
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -80,6 +100,7 @@ public class BookResource {
                 .build();
 
     }
+
 
 
 
