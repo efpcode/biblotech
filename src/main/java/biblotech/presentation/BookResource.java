@@ -68,7 +68,7 @@ public class BookResource {
 
 
     /**
-     * GET /books/authors?author=StringPattern&pageNumber=Integer&pageSize=Integer
+     * GET /books/authors?author=A&pageNumber=2&pageSize=3&sortBy=title&sortOrder=asc
      */
     @GET
     @Path("authors")
