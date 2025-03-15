@@ -1,5 +1,6 @@
-package biblotech.rules;
+package biblotech.rules.validators;
 
+import biblotech.rules.ValidBookAuthor;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

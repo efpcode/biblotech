@@ -76,9 +76,11 @@ public class BookResource {
     public SortedBookPageResponse getBooksByAuthorSortedByTitleDesc(
             @Valid @ValidBookAuthor @QueryParam("author") String author,
             @Valid @Positive @QueryParam("pageNumber") Long pageNumber,
+            @QueryParam("sortBy") @DefaultValue("title") String sort,
+            @QueryParam("sortOrder") @DefaultValue("asc") String sortOrder,
             @Valid @Positive @QueryParam("pageSize") Integer pageSize
             ){
-        return bookService.getBooksByAuthor(author, pageNumber, pageSize);
+        return bookService.getBooksByAuthor(author, sort, sortOrder ,pageNumber, pageSize);
 
     }
 

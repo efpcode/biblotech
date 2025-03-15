@@ -1,5 +1,6 @@
 package biblotech.rules;
 
+import biblotech.rules.validators.ValidBookPublishDateValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 

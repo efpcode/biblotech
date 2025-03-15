@@ -1,11 +1,11 @@
-package biblotech.rules;
+package biblotech.rules.validators;
 
+import biblotech.rules.ValidBookISBN;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class ValidBookISBNValidator implements ConstraintValidator<ValidBookISBN, String> {
 
