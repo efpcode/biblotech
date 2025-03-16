@@ -1,6 +1,6 @@
 package biblotech.dto;
 
 
+import jakarta.validation.constraints.NotBlank;
 
-
-public record SortedBookQuery(String sortBy){}
+public record SortedBookQuery(@NotBlank String sortBy){}

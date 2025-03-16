@@ -13,8 +13,10 @@ public class SortedBookOrderMapper {
     public static SortedBookOrder mapToOrderType(SortedBookOrder sortedBookOrder, String[] expectedOrder) {
 
         String order = sortedBookOrder.order().toLowerCase();
-        if(order.isBlank())
+        if(order.isBlank() || expectedOrder.length == 0) {
             order = "asc";
+
+        }
 
 
         if(!Arrays.asList(expectedOrder).contains(order)) {

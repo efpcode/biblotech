@@ -1,12 +1,13 @@
 package biblotech.dto;
 
 
-public record SortedBookPageResponse(BookListResponse sortedBooks, Integer totalElements, Long totalPages) {
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
-    public SortedBookPageResponse(BookListResponse sortedBooks, Integer totalElements, Long totalPages) {
-        this.sortedBooks = sortedBooks;
-        this.totalElements = totalElements;
-        this.totalPages = totalPages;
-    }
+
+public record SortedBookPageResponse(
+        @NotNull BookListResponse sortedBooks,
+        @Positive Integer totalElements,
+        @Positive Long totalPages) {
 
 }

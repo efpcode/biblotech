@@ -15,7 +15,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import biblotech.persistence.BookRepository;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -87,7 +86,7 @@ public class BookService {
         SortedBookQuery sortedBookQuery = SortedBookQueryMapper.mapToSortedBookQuery(new SortedBookQuery(sortBy), expectedQuery);
         SortedBookOrder sortedBookOrder = SortedBookOrderMapper.mapToOrderType(new SortedBookOrder(sortOrder), expectedOrder);
 
-        SortedBookByAuthorAndTitleParamsDTO bookParams = new SortedBookByAuthorAndTitleParamsDTO(
+        SortedBooksQueryParams bookParams = new SortedBooksQueryParams(
                 bookPagination.pageNumber(),
                 bookPagination.pageSize(),
                 sortedBookQuery.sortBy(),

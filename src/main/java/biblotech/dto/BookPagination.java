@@ -9,7 +9,7 @@ public record BookPagination(
         Integer pageSize) {
 
 
-        public static BookPagination valueOf(Long pageNumber, Integer pageSize) {
+        public static BookPagination valueOf(@Positive Long pageNumber, @Positive Integer pageSize) {
                 if (pageNumber == null  || pageNumber <= 0)
                         pageNumber = 1L;
 
