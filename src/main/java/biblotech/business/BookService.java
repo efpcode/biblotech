@@ -4,9 +4,9 @@ import biblotech.dto.*;
 import biblotech.entity.Book;
 import biblotech.exceptions.BookDuplicationError;
 import biblotech.exceptions.BookNotFound;
-import biblotech.exceptions.InvalidSortByQueryException;
-import biblotech.exceptions.InvalidSortOrderQueryException;
 import biblotech.mapper.BookMapper;
+import biblotech.mapper.SortedBookOrderMapper;
+import biblotech.mapper.SortedBookQueryMapper;
 import jakarta.data.Order;
 import jakarta.data.Sort;
 import jakarta.data.page.Page;
@@ -81,22 +81,28 @@ public class BookService {
 
     public SortedBookPageResponse getBooksByAuthor(String author, String sortBy, String sortOrder ,Long pageNumber, Integer pageSize) {
         Order<Book> bookOrder;
+        BookPagination bookPagination = BookPagination.valueOf(pageNumber, pageSize);
+        String[] expectedQuery = {"author","title"};
+        String[] expectedOrder = {"asc","desc"};
+        SortedBookQuery sortedBookQuery = SortedBookQueryMapper.mapToSortedBookQuery(new SortedBookQuery(sortBy), expectedQuery);
+        SortedBookOrder sortedBookOrder = SortedBookOrderMapper.mapToOrderType(new SortedBookOrder(sortOrder), expectedOrder);
 
-        SortedBookByAuthorAndTitleParamsDTO bookParams = new SortedBookByAuthorAndTitleParamsDTO(pageNumber, pageSize, sortBy, sortOrder);
-        var bookParamsDTO = sortedBookParamsChecker(bookParams);
+        SortedBookByAuthorAndTitleParamsDTO bookParams = new SortedBookByAuthorAndTitleParamsDTO(
+                bookPagination.pageNumber(),
+                bookPagination.pageSize(),
+                sortedBookQuery.sortBy(),
+                sortedBookOrder.order());
 
         var patternAuthor = "%" + author + "%";
 
-        PageRequest pageRequest = PageRequest.ofPage(bookParamsDTO.pageNumber(), bookParamsDTO.pageSize(), true);
+        PageRequest pageRequest = PageRequest.ofPage(bookParams.pageNumber(), bookParams.pageSize(), true);
 
-        if(bookParamsDTO.sortOrder().equals("asc")) {
-            bookOrder = Order.by(Sort.asc(bookParamsDTO.sortBy()));
+        if(bookParams.sortOrder().equals("asc")) {
+            bookOrder = Order.by(Sort.asc(bookParams.sortBy()));
 
         }else {
-            bookOrder = Order.by(Sort.desc(bookParamsDTO.sortBy()));
+            bookOrder = Order.by(Sort.desc(bookParams.sortBy()));
         }
-
-
 
         Page<Book> bookPage = bookRepository.findByBookAuthorLike(
                 patternAuthor,
@@ -114,15 +120,6 @@ public class BookService {
 
     }
 
-    private SortedBookByAuthorAndTitleParamsDTO sortedBookParamsChecker(SortedBookByAuthorAndTitleParamsDTO sortedBookParams){
-        if(!Arrays.asList("asc", "desc").contains(sortedBookParams.sortOrder())) {
-            throw new InvalidSortOrderQueryException("Invalid sort order expected asc or desc");
-        }
-        if(!Arrays.asList("bookTitle", "bookAuthor").contains(sortedBookParams.sortBy())) {
-            throw new InvalidSortByQueryException("Invalid sort by expected title or author");
-        }
-        return sortedBookParams;
 
-    }
 
 }

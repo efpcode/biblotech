@@ -9,6 +9,8 @@ import jakarta.ws.rs.ext.Provider;
 public class InvalidSortOrderQueryExceptionMapper implements ExceptionMapper<InvalidSortByQueryException> {
     @Override
     public Response toResponse(InvalidSortByQueryException invalidSortByQueryException) {
-        return Response.status(Response.Status.BAD_REQUEST).entity(invalidSortByQueryException.getMessage()).build();
+        return Response.status(Response.Status.BAD_REQUEST)
+                .entity(invalidSortByQueryException.getMessage())
+                .build();
     }
 }
