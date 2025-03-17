@@ -94,12 +94,7 @@ public class BookService {
 
         PageRequest pageRequest = PageRequest.ofPage(bookParams.pageNumber(), bookParams.pageSize(), true);
 
-        if(bookParams.sortOrder().equals("asc")) {
-            bookOrder = Order.by(Sort.asc(bookParams.sortBy()));
-
-        }else {
-            bookOrder = Order.by(Sort.desc(bookParams.sortBy()));
-        }
+        bookOrder = bookParams.sortOrder().equals("asc") ? Order.by(Sort.asc(bookParams.sortBy())) : Order.by(Sort.desc(bookParams.sortBy()));
 
         bookPage = getBooksPages(author, title, pageRequest, bookOrder);
 
