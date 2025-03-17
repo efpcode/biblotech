@@ -10,12 +10,14 @@ public class SortedBookQueryMapper {
     private  SortedBookQueryMapper() {
 
     }
-    public static SortedBookQuery mapToSortedBookQuery(SortedBookQuery sortedBookQuery, String[] expectedQuery) {
+
+    static final String[] SORT_BY_FIELDS = { "title", "author", "isbn", "description", "pages", "published"};
+    public static SortedBookQuery mapToSortedBookQuery(SortedBookQuery sortedBookQuery) {
 
         String sortBy = sortedBookQuery.sortBy().toLowerCase();
 
-        if (!Arrays.asList(expectedQuery).contains(sortBy)) {
-            throw new InvalidSortByQueryException("Invalid sort by: " + sortBy + ".\n Valid values are: " + Arrays.toString(expectedQuery));
+        if (!Arrays.asList(SORT_BY_FIELDS).contains(sortBy)) {
+            throw new InvalidSortByQueryException("Invalid sort by: " + sortBy + ".\n Valid values are: " + Arrays.toString(SORT_BY_FIELDS));
         }
 
         String mapToEntityColumn = switch (sortBy){
@@ -23,8 +25,8 @@ public class SortedBookQueryMapper {
             case "author" -> "bookAuthor";
             case "isbn" -> "bookIsbn";
             case "description" -> "bookDescription";
-            case "pages" -> "bookPageNumber";
-            case "published" -> "bookPublished";
+            case "pages" -> "bookPagesNumber";
+            case "published" -> "bookPublishDate";
             default -> sortBy;
         };
 

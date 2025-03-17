@@ -6,20 +6,34 @@ import jakarta.data.page.Page;
 import jakarta.data.page.PageRequest;
 import jakarta.data.repository.*;
 
+
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface BookRepository extends CrudRepository<Book, Long>{
-    // Query like search for author
-    @Query("SELECT b FROM Book b WHERE b.bookAuthor LIKE :bookAuthor")
+    // Query like search for author with validation for author name Jane is query whereas is not jane
+    @Query("SELECT b FROM Book b WHERE LOWER(b.bookAuthor) ILIKE (CONCAT('%', :bookAuthor, '%'))")
     Page<Book> findByBookAuthorLike(String bookAuthor, PageRequest pageRequest, Order<Book> bookOrder);
 
+    @Query("SELECT b FROM Book b WHERE LOWER(b.bookTitle) ILIKE (CONCAT('%', :bookTitle, '%'))")
+    Page<Book> findBookTitleLike(String bookTitle, PageRequest pageRequest, Order<Book> bookOrder);
 
     @Find
-    Optional<Book> findByBookTitleAndBookAuthor(String bookTitle, String bookAuthor);
+    Page<Book> findAll(PageRequest pageRequest,  Order<Book> bookOrder);
+
+    @Query("SELECT b FROM Book b WHERE b.bookTitle ILIKE CONCAT('%', :bookTitle, '%') AND b.bookAuthor ILIKE CONCAT('%', :bookAuthor, '%')")
+    List<Book> findByBookTitleAndBookAuthorIgnoreCase(String bookTitle, String bookAuthor);
+
+     //@Query("SELECT b FROM Book b WHERE b.bookTitle ILIKE CONCAT('%', :bookTitle, '%') OR b.bookAuthor ILIKE CONCAT('%', :bookAuthor, '%')")
+     @Find
+     Page<Book> findByBookByPage(PageRequest pageRequest, Order<Book> bookOrder);
+
 
     @Find
-    Optional<Book> findByBookISBN(String bookIsbn);
+    Optional<Book> findByBookIsbn(String bookIsbn);
+
+
 
 
 }

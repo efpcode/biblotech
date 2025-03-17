@@ -6,12 +6,10 @@ import biblotech.dto.SortedBookPageResponse;
 import biblotech.dto.BookResponse;
 import biblotech.dto.CreateBook;
 import biblotech.entity.Book;
-import biblotech.exceptions.NullParameterError;
 import biblotech.rules.ValidBookAuthor;
 import biblotech.rules.ValidBookTitle;
 import biblotech.rules.ValidSortedBookOrder;
 import biblotech.rules.ValidSortedBookQuery;
-import jakarta.data.repository.Param;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -36,12 +34,6 @@ public class BookResource {
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public BookListResponse getBooks() {
-        return new BookListResponse(bookService.getAllBooks());
-    }
-
-    @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public BookResponse getBook(@PathParam("id") Long id){return bookService.getBookById(id);}
@@ -59,8 +51,8 @@ public class BookResource {
     @GET
     @Path("search")
     @Produces(MediaType.APPLICATION_JSON)
-    public BookResponse getBooksByTitleAndAuthor(@Valid @ValidBookTitle @QueryParam("title")  String title, @ValidBookAuthor @QueryParam("author") String author){
-            return bookService.getBookByTitleAndAuthor(title, author);
+    public BookListResponse getBooksByTitleAndAuthor(@Valid @ValidBookTitle @QueryParam("title")  String title, @ValidBookAuthor @QueryParam("author") String author){
+            return new BookListResponse(bookService.getBookByTitleAndAuthor(title, author));
     }
 
 
@@ -68,19 +60,18 @@ public class BookResource {
      * GET /books/authors?author=A&pageNumber=2&pageSize=3&sortBy=title&sortOrder=asc
      */
     @GET
-    @Path("authors")
     @Produces(MediaType.APPLICATION_JSON)
-    public SortedBookPageResponse getBooksByAuthorSortedByTitleDesc(
-            @Valid @ValidBookAuthor @QueryParam("author") String author,
+    public SortedBookPageResponse getBooksByAuthorSortedByTitle(
+            @Valid @QueryParam("author") String author,
+            @Valid @QueryParam("title") String title,
             @Valid @Positive @QueryParam("pageNumber") Long pageNumber,
             @Valid @ValidSortedBookQuery @QueryParam("sortBy") @DefaultValue("title") String sort,
             @Valid @ValidSortedBookOrder @QueryParam("sortOrder") @DefaultValue("asc") String sortOrder,
             @Valid @Positive @QueryParam("pageSize") Integer pageSize
             ){
-        return bookService.getBooksByAuthor(author, sort, sortOrder ,pageNumber, pageSize);
+        return bookService.getBooksSorted(author, title, sort, sortOrder ,pageNumber, pageSize);
 
     }
-
 
 
 

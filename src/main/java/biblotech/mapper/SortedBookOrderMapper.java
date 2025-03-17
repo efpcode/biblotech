@@ -10,17 +10,13 @@ public class SortedBookOrderMapper {
 
     }
 
-    public static SortedBookOrder mapToOrderType(SortedBookOrder sortedBookOrder, String[] expectedOrder) {
+    static private String[] SORT_ORDER_FIELDS = {"asc","desc"};
 
+    public static SortedBookOrder mapToOrderType(SortedBookOrder sortedBookOrder) {
         String order = sortedBookOrder.order().toLowerCase();
-        if(order.isBlank() || expectedOrder.length == 0) {
-            order = "asc";
 
-        }
-
-
-        if(!Arrays.asList(expectedOrder).contains(order)) {
-            throw new InvalidSortOrderQueryException("Invalid  sort   order: "+ sortedBookOrder.order()+"\n Expected values are" + Arrays.toString(expectedOrder));
+        if(!Arrays.asList(SORT_ORDER_FIELDS).contains(order)) {
+            throw new InvalidSortOrderQueryException("Invalid  sort   order: "+ sortedBookOrder.order()+"\n Expected values are" + Arrays.toString(SORT_ORDER_FIELDS));
         }
 
         return new SortedBookOrder(order);
