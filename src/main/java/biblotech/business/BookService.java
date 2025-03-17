@@ -131,7 +131,6 @@ public class BookService {
                     bookOrder);
 
         }else{
-
             throw new InvalidSearchQuery("Invalid search query for root endpoint please use: api/books/search");
 
         }
