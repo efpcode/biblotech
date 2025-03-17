@@ -49,15 +49,22 @@ public class BookService {
 
     }
 
-    public List<BookResponse> getBookByTitleAndAuthor(String title, String author) {
-        var books = bookRepository.findByBookTitleAndBookAuthorIgnoreCase(title, author);
-        if (books.isEmpty()) {
+    public SortedBookPageResponse getBookBySearchQuery(String title, String author, Long pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+        Page<Book> bookPage;
+
+        SortedBooksQueryParams bookParams = getSortedBooksQueryParams(pageNumber, pageSize, sortBy, sortOrder);
+
+        PageRequest pageRequest = PageRequest.ofPage(bookParams.pageNumber(), bookParams.pageSize(), true);
+        Order<Book> bookOrder = getSortsDirection(bookParams);
+        bookPage = bookRepository.findBookTitleAndBookAuthorIgnoreCasePage(title, author, pageRequest, bookOrder);
+        if (!bookPage.hasContent()) {
             throw new BookNotFound("Book with title " + title + " and author " + author + " not found");
         }
-        return books.stream()
-                .map(BookMapper::mapToBookResponse)
-                .filter(Objects::nonNull)
-                .toList();
+
+        List<BookResponse> booksListResponses = getBookResponseList(bookPage);
+
+        return new SortedBookPageResponse(new BookListResponse(booksListResponses), bookPage.numberOfElements(), bookPage.totalPages());
+
 
         }
 
@@ -82,20 +89,13 @@ public class BookService {
     public SortedBookPageResponse getBooksSorted(String author, String title, String sortBy, String sortOrder , Long pageNumber, Integer pageSize) {
         Order<Book> bookOrder;
         Page<Book> bookPage;
-        BookPagination bookPagination = BookPagination.Of(pageNumber, pageSize);
-        SortedBookQuery sortedBookQuery = SortedBookQueryMapper.mapToSortedBookQuery(new SortedBookQuery(sortBy));
-        SortedBookOrder sortedBookOrder = SortedBookOrderMapper.mapToOrderType(new SortedBookOrder(sortOrder));
 
-        SortedBooksQueryParams bookParams = new SortedBooksQueryParams(
-                bookPagination.pageNumber(),
-                bookPagination.pageSize(),
-                sortedBookQuery.sortBy(),
-                sortedBookOrder.order());
+        SortedBooksQueryParams bookParams = getSortedBooksQueryParams(pageNumber, pageSize, sortBy, sortOrder);
 
 
         PageRequest pageRequest = PageRequest.ofPage(bookParams.pageNumber(), bookParams.pageSize(), true);
 
-        bookOrder = bookParams.sortOrder().equals("asc") ? Order.by(Sort.asc(bookParams.sortBy())) : Order.by(Sort.desc(bookParams.sortBy()));
+        bookOrder = getSortsDirection(bookParams);
 
         bookPage = getBooksPages(author, title, pageRequest, bookOrder);
 
@@ -119,7 +119,7 @@ public class BookService {
         }
         else if(title==null) {
 
-            bookPage = bookRepository.findByBookAuthorLike(
+            bookPage = bookRepository.findBookAuthorLike(
                     author,
                     pageRequest,
                     bookOrder
@@ -143,6 +143,16 @@ public class BookService {
                 .map(BookMapper::mapToBookResponse)
                 .filter(Objects::nonNull)
                 .toList();
+    }
+    private static SortedBooksQueryParams getSortedBooksQueryParams(Long pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+        BookPagination bookPagination = BookPagination.Of(pageNumber, pageSize);
+        SortedBookQuery sorted = SortedBookQueryMapper.mapToSortedBookQuery(new SortedBookQuery(sortBy));
+        SortedBookOrder order = SortedBookOrderMapper.mapToOrderType(new SortedBookOrder(sortOrder));
+        return new SortedBooksQueryParams(bookPagination.pageNumber(), bookPagination.pageSize(), sorted.sortBy(), order.order());
+    }
+
+    private static Order<Book> getSortsDirection(SortedBooksQueryParams bookParams) {
+        return bookParams.sortOrder().equals("asc") ? Order.by(Sort.asc(bookParams.sortBy())) : Order.by(Sort.desc(bookParams.sortBy()));
     }
 
 
