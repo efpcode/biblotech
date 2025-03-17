@@ -4,6 +4,7 @@ import biblotech.dto.*;
 import biblotech.entity.Book;
 import biblotech.exceptions.BookDuplicationError;
 import biblotech.exceptions.BookNotFound;
+import biblotech.exceptions.InvalidSearchQuery;
 import biblotech.mapper.BookMapper;
 import biblotech.mapper.SortedBookOrderMapper;
 import biblotech.mapper.SortedBookQueryMapper;
@@ -48,7 +49,7 @@ public class BookService {
 
     }
 
-    public List<BookResponse> getBookByTitleAndAuthor(String title,String author) {
+    public List<BookResponse> getBookByTitleAndAuthor(String title, String author) {
         var books = bookRepository.findByBookTitleAndBookAuthorIgnoreCase(title, author);
         if (books.isEmpty()) {
             throw new BookNotFound("Book with title " + title + " and author " + author + " not found");
@@ -130,9 +131,9 @@ public class BookService {
                     bookOrder);
 
         }else{
-            bookPage = bookRepository.findByBookByPage(pageRequest, bookOrder);
 
-            bookPage.content().addAll(bookRepository.findByBookTitleAndBookAuthorIgnoreCase(title, author));
+            throw new InvalidSearchQuery("Invalid search query for root endpoint please use: api/books/search");
+
         }
         return bookPage;
     }
