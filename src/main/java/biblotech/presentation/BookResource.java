@@ -7,8 +7,10 @@ import biblotech.dto.CreateBook;
 import biblotech.entity.Book;
 import biblotech.rules.*;
 import jakarta.inject.Inject;
+import jakarta.json.bind.annotation.JsonbDateFormat;
+import jakarta.validation.Constraint;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -53,7 +55,16 @@ public class BookResource {
             @Valid @Positive @QueryParam("pageNumber") Long pageNumber,
             @Valid @ValidSortedBookQuery @QueryParam("sortBy") @DefaultValue("title") String sortBy,
             @Valid @ValidSortedBookOrder @QueryParam("sortOrder") @DefaultValue("asc") String sortOrder,
-            @Valid @Positive @QueryParam("pageSize") Integer pageSize
+            @Valid @Positive @QueryParam("pageSize") Integer pageSize,
+            @Valid
+            @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}", message = "Expected date has invalid format: yyyy-MM-dd")
+            @QueryParam("startDate")
+            String startDate,
+            @Valid
+            @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}", message = "Expected format is:  yyyy-MM-dd")
+            @QueryParam("endDate")
+            String endDate
+
             ){
 
         return bookService.getBookBySearchQuery(
@@ -62,7 +73,9 @@ public class BookResource {
                 pageNumber,
                 pageSize,
                 sortBy ,
-                sortOrder);
+                sortOrder,
+                startDate ,
+                endDate);
     }
 
 

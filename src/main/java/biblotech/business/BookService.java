@@ -16,6 +16,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import biblotech.persistence.BookRepository;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -49,16 +51,32 @@ public class BookService {
 
     }
 
-    public SortedBookPageResponse getBookBySearchQuery(String title, String author, Long pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+    public SortedBookPageResponse getBookBySearchQuery(
+            String title,
+            String author,
+            Long pageNumber,
+            Integer pageSize,
+            String sortBy,
+            String sortOrder,
+            String startDate,
+            String endDate) {
         Page<Book> bookPage;
 
         SortedBooksQueryParams bookParams = getSortedBooksQueryParams(pageNumber, pageSize, sortBy, sortOrder);
-
         PageRequest pageRequest = PageRequest.ofPage(bookParams.pageNumber(), bookParams.pageSize(), true);
         Order<Book> bookOrder = getSortsDirection(bookParams);
-        bookPage = bookRepository.findBookTitleAndBookAuthorIgnoreCasePage(title, author, pageRequest, bookOrder);
+
+        if(startDate != null && endDate != null) {
+            var parsedStarDate = LocalDate.parse(startDate);
+            var parsedEndDate = LocalDate.parse(endDate);
+
+            bookPage = bookRepository.findBookPublishDateBetween(parsedStarDate, parsedEndDate, pageRequest, bookOrder);
+        }
+        else {
+            bookPage = bookRepository.findBookTitleAndBookAuthorIgnoreCasePage(title, author, pageRequest, bookOrder);
+        }
         if (!bookPage.hasContent()) {
-            throw new BookNotFound("Book with title " + title + " and author " + author + " not found");
+            throw new BookNotFound("Book was not found!");
         }
 
         List<BookResponse> booksListResponses = getBookResponseList(bookPage);
