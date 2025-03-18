@@ -1,9 +1,7 @@
 package biblotech.presentation;
 
 import biblotech.business.BookService;
-import biblotech.dto.SortedBookPageResponse;
-import biblotech.dto.BookResponse;
-import biblotech.dto.CreateBook;
+import biblotech.dto.*;
 import biblotech.entity.Book;
 import biblotech.rules.*;
 import jakarta.inject.Inject;
@@ -48,32 +46,19 @@ public class BookResource {
     @Path("search")
     @Produces(MediaType.APPLICATION_JSON)
     public SortedBookPageResponse getBooksBySearchQuery(
-            @Valid @ValidBookTitle @QueryParam("title") String title,
-            @Valid @ValidBookAuthor @QueryParam("author") String author,
-            @Valid @Positive @QueryParam("pageNumber") Long pageNumber,
-            @Valid @ValidSortedBookQuery @QueryParam("sortBy") @DefaultValue("title") String sortBy,
-            @Valid @ValidSortedBookOrder @QueryParam("sortOrder") @DefaultValue("asc") String sortOrder,
-            @Valid @Positive @QueryParam("pageSize") Integer pageSize,
-            @Valid
-            @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}", message = "Expected date has invalid format: yyyy-MM-dd")
-            @QueryParam("startDate")
-            String startDate,
-            @Valid
-            @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}", message = "Expected format is:  yyyy-MM-dd")
-            @QueryParam("endDate")
-            String endDate
+            @Valid @BeanParam BookFilterQueryResponse searchQuery
 
             ){
 
         return bookService.getBookBySearchQuery(
-                title,
-                author,
-                pageNumber,
-                pageSize,
-                sortBy ,
-                sortOrder,
-                startDate ,
-                endDate);
+               searchQuery.getTitle(),
+               searchQuery.getAuthor(),
+               searchQuery.getPageNumber(),
+               searchQuery.getPageSize(),
+               searchQuery.getSortBy(),
+               searchQuery.getSortOrder(),
+               searchQuery.getStartDate(),
+               searchQuery.getEndDate());
     }
 
 
@@ -83,14 +68,16 @@ public class BookResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public SortedBookPageResponse getBooksByAuthorSortedByTitle(
-            @Valid @QueryParam("author") String author,
-            @Valid @QueryParam("title") String title,
-            @Valid @Positive @QueryParam("pageNumber") Long pageNumber,
-            @Valid @ValidSortedBookQuery @QueryParam("sortBy") @DefaultValue("title") String sort,
-            @Valid @ValidSortedBookOrder @QueryParam("sortOrder") @DefaultValue("asc") String sortOrder,
-            @Valid @Positive @QueryParam("pageSize") Integer pageSize
+            @Valid @BeanParam BookAuthorsQueryResponse searchSort
             ){
-        return bookService.getBooksSorted(author, title, sort, sortOrder ,pageNumber, pageSize);
+
+          return bookService.getBooksSorted(
+                  searchSort.getAuthor(),
+                  searchSort.getTitle(),
+                  searchSort.getSortBy(),
+                  searchSort.getSortOrder(),
+                  searchSort.getPageNumber(),
+                  searchSort.getPageSize());
 
     }
 
