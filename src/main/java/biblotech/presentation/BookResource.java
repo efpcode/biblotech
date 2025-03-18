@@ -45,8 +45,8 @@ public class BookResource {
     @GET
     @Path("search")
     @Produces(MediaType.APPLICATION_JSON)
-    public SortedBookPageResponse getBooksBySearchQuery(
-            @Valid @BeanParam BookFilterQueryResponse searchQuery
+    public  SortedBookPageResponse getBooksBySearchQuery(
+            @Valid  @BeanParam BookFilterQueryResponse searchQuery
 
             ){
 

@@ -1,16 +1,13 @@
 package biblotech.dto;
 
-import biblotech.rules.ValidBookAuthor;
-import biblotech.rules.ValidBookTitle;
-import biblotech.rules.ValidSortedBookOrder;
-import biblotech.rules.ValidSortedBookQuery;
+import biblotech.rules.*;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.QueryParam;
 
 import java.util.Objects;
-
+@ValidDateRange
 public  class BookFilterQueryResponse {
     @ValidBookTitle
     @QueryParam("title")
