@@ -163,15 +163,13 @@ public class BookService {
     }
     private static SortedBooksQueryParams getSortedBooksQueryParams(Long pageNumber, Integer pageSize, String sortBy, String sortOrder) {
         BookPagination bookPagination = BookPagination.Of(pageNumber, pageSize);
-        SortedBookQuery sorted = SortedBookQueryMapper.mapToSortedBookQuery(new SortedBookQuery(sortBy));
-        SortedBookOrder order = SortedBookOrderMapper.mapToOrderType(new SortedBookOrder(sortOrder));
-        return new SortedBooksQueryParams(bookPagination.pageNumber(), bookPagination.pageSize(), sorted.sortBy(), order.order());
+        String sorted = SortedBookQueryMapper.mapToSortedBookQuery(sortBy);
+        String order = SortedBookOrderMapper.mapToOrderType(sortOrder);
+        return new SortedBooksQueryParams(bookPagination.pageNumber(), bookPagination.pageSize(), sorted, order);
     }
 
     private static Order<Book> getSortsDirection(SortedBooksQueryParams bookParams) {
         return bookParams.sortOrder().equals("asc") ? Order.by(Sort.asc(bookParams.sortBy())) : Order.by(Sort.desc(bookParams.sortBy()));
     }
-
-
 
 }
