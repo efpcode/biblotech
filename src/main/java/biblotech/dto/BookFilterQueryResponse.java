@@ -9,11 +9,9 @@ import jakarta.ws.rs.QueryParam;
 import java.util.Objects;
 @ValidDateRange
 public  class BookFilterQueryResponse {
-    @ValidBookTitle
     @QueryParam("title")
     private  String title;
 
-    @ValidBookAuthor
     @QueryParam("author")
     private  String author;
 

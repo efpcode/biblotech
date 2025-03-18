@@ -47,7 +47,7 @@ public class Book {
     @Column(name="bookPageNumber", nullable = false)
     private Long bookPagesNumber;
 
-    @JsonbDateFormat(value = "yyyy-MM-dd") // Specify the expected date format
+    @Pattern(regexp = "//d{4}-//d{2}-//{2}") // Specify the expected date format
     @PastOrPresent(message = "Publishing date for book must be in the past")
     @Column(name="bookPublishDate",  nullable = false)
     @ValidBookPublishDate

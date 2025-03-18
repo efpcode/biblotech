@@ -66,15 +66,27 @@ public class BookService {
         PageRequest pageRequest = PageRequest.ofPage(bookParams.pageNumber(), bookParams.pageSize(), true);
         Order<Book> bookOrder = getSortsDirection(bookParams);
 
-        if(startDate != null && endDate != null) {
-            var parsedStarDate = LocalDate.parse(startDate);
-            var parsedEndDate = LocalDate.parse(endDate);
+        var parsedStarDate = Objects.isNull(startDate)? null: LocalDate.parse(startDate);
+        var parsedEndDate = Objects.isNull(endDate)? null: LocalDate.parse(endDate);
+
+        if(startDate != null && endDate != null && title != null && author != null) {
+            bookPage = bookRepository.findBookPublishDateBetweenAndBookAuthorAndBookTitle(author, title, parsedStarDate, parsedEndDate, pageRequest, bookOrder);
+
+        } else if (startDate != null && endDate != null && title != null) {
+            bookPage = bookRepository.findBookPublishDateBetweenAndBookTitle(title, parsedStarDate, parsedEndDate, pageRequest, bookOrder);
+
+        }else if (startDate != null && endDate != null && author != null) {
+            bookPage = bookRepository.findBookPublishDateBetweenAndBookAuthor(author, parsedStarDate, parsedEndDate, pageRequest, bookOrder);
+        }
+
+        else if(startDate != null && endDate != null) {
 
             bookPage = bookRepository.findBookPublishDateBetween(parsedStarDate, parsedEndDate, pageRequest, bookOrder);
         }
-        else {
+        else  {
             bookPage = bookRepository.findBookTitleAndBookAuthorIgnoreCasePage(title, author, pageRequest, bookOrder);
         }
+
         if (!bookPage.hasContent()) {
             throw new BookNotFound("Book was not found!");
         }

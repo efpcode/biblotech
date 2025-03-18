@@ -5,11 +5,13 @@ import biblotech.rules.ValidBookISBN;
 import biblotech.rules.ValidBookPublishDate;
 import biblotech.rules.ValidBookTitle;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
+@NotNull
 public record CreateBook(
         @ValidBookTitle String title,
         @ValidBookAuthor String author,
