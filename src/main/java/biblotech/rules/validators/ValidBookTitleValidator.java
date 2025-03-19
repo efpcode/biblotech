@@ -44,7 +44,8 @@ public class ValidBookTitleValidator implements ConstraintValidator<ValidBookTit
             return false;
         }
 
-        String regex = "^[A-Za-z0-9]+(?:[\\s][A-Za-z0-9]+)*$";
+        //String regex = "^[A-Za-z0-9]+(?:[\\s][A-Za-z0-9]+)*$";
+        String regex = "^[A-Za-z0-9\\s'\"-:;,.!?()&]+$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(title);
         return matcher.matches();

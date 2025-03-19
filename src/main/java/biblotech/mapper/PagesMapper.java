@@ -15,7 +15,7 @@ public class PagesMapper {
             try {
                 return Long.valueOf(pages);
             }catch (NumberFormatException e) {
-                throw new InvalidBookPage("Invalid page(s) input please provide a valid page number");
+                throw new InvalidBookPage("Invalid page(s) input, please provide a valid page number");
             }
         }
 
