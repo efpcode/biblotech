@@ -17,7 +17,6 @@ import jakarta.inject.Inject;
 import biblotech.persistence.BookRepository;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -43,12 +42,17 @@ public class BookService {
 
     public Book createBook(CreateBook book) {
         var newBook = mapToBook(book);
-        if (getBookByISBN(newBook.getBookIsbn()).isPresent()) {
-            throw new BookDuplicationError("Book with ISBN " + newBook.getBookIsbn() + " already exists");
+        if (getBookByISBN(newBook.getBookIsbn()).isPresent() || getBookAuthorAndTitle(newBook).isPresent() ) {
+            throw new BookDuplicationError(
+                    "Book with: " + newBook.getBookIsbn() + " " + newBook.getBookAuthor() + " "+ newBook.getBookTitle() +" already exists");
         }
         newBook =  bookRepository.insert(newBook);
         return newBook;
 
+    }
+
+    public Optional<Book> getBookAuthorAndTitle(Book book){
+        return bookRepository.getBookTitleAndBookAuthor(book.getBookTitle(), book.getBookAuthor());
     }
 
     public SortedBookPageResponse getBookBySearchQuery(

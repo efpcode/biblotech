@@ -5,11 +5,9 @@ import jakarta.data.Order;
 import jakarta.data.page.Page;
 import jakarta.data.page.PageRequest;
 import jakarta.data.repository.*;
-import jakarta.ws.rs.QueryParam;
 
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -41,6 +39,10 @@ public interface BookRepository extends CrudRepository<Book, Long> {
 
     @Find
     Optional<Book> findByBookIsbn(String bookIsbn);
+
+
+    @Query("SELECT b FROM Book b WHERE b.bookTitle ILIKE CONCAT('%', :bookTitle, '%') AND b.bookAuthor ILIKE CONCAT('%', :bookAuthor, '%')")
+    Optional<Book> getBookTitleAndBookAuthor(String bookTitle, String bookAuthor);
 
 
 }
