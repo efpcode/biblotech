@@ -13,6 +13,12 @@ public class ValidDateRangeValidator implements ConstraintValidator<ValidDateRan
 
     @Override
     public boolean isValid(BookFilterQueryResponse searchFilter, ConstraintValidatorContext constraintValidatorContext) {
+
+        if (searchFilter.getStartDate() == null && searchFilter.getEndDate() == null) {
+            // If both dates are null, skip the validation checks for date range
+            return true;
+        }
+
         var startDate = LocalDate.parse(searchFilter.getStartDate());
         var endDate = LocalDate.parse(searchFilter.getEndDate());
 

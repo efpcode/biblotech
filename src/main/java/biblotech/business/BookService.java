@@ -64,43 +64,24 @@ public class BookService {
             String sortOrder,
             String startDate,
             String endDate) {
-        Page<Book> bookPage;
 
         SortedBooksQueryParams bookParams = getSortedBooksQueryParams(pageNumber, pageSize, sortBy, sortOrder);
         PageRequest pageRequest = PageRequest.ofPage(bookParams.pageNumber(), bookParams.pageSize(), true);
         Order<Book> bookOrder = getSortsDirection(bookParams);
 
-        var parsedStarDate = Objects.isNull(startDate)? null: LocalDate.parse(startDate);
-        var parsedEndDate = Objects.isNull(endDate)? null: LocalDate.parse(endDate);
+        Page<Book> bookPage = getBooksQueryFilter(title, author, startDate, endDate, pageRequest, bookOrder);
+        if(!bookPage.hasContent()){
+            throw new  BookNotFound("No books found!");
+        }else {
+            List<BookResponse> booksListResponses = getBookResponseList(bookPage);
 
-        if(startDate != null && endDate != null && title != null && author != null) {
-            bookPage = bookRepository.findBookPublishDateBetweenAndBookAuthorAndBookTitle(author, title, parsedStarDate, parsedEndDate, pageRequest, bookOrder);
-
-        } else if (startDate != null && endDate != null && title != null) {
-            bookPage = bookRepository.findBookPublishDateBetweenAndBookTitle(title, parsedStarDate, parsedEndDate, pageRequest, bookOrder);
-
-        }else if (startDate != null && endDate != null && author != null) {
-            bookPage = bookRepository.findBookPublishDateBetweenAndBookAuthor(author, parsedStarDate, parsedEndDate, pageRequest, bookOrder);
+            return new SortedBookPageResponse(new BookListResponse(booksListResponses), bookPage.numberOfElements(), bookPage.totalPages());
         }
-
-        else if(startDate != null && endDate != null) {
-
-            bookPage = bookRepository.findBookPublishDateBetween(parsedStarDate, parsedEndDate, pageRequest, bookOrder);
-        }
-        else  {
-            bookPage = bookRepository.findBookTitleAndBookAuthorIgnoreCasePage(title, author, pageRequest, bookOrder);
-        }
-
-        if (!bookPage.hasContent()) {
-            throw new BookNotFound("Book was not found!");
-        }
-
-        List<BookResponse> booksListResponses = getBookResponseList(bookPage);
-
-        return new SortedBookPageResponse(new BookListResponse(booksListResponses), bookPage.numberOfElements(), bookPage.totalPages());
 
 
         }
+
+
 
 
     public BookResponse getBookById(Long id) {
@@ -147,7 +128,7 @@ public class BookService {
     // Helper methods
 
     private Page<Book> getBooksPages(String author, String title, PageRequest pageRequest, Order<Book> bookOrder) {
-        Page<Book> bookPage;
+        Page<Book> bookPage = null;
         if(author ==null && title ==null) {
             bookPage = bookRepository.findAll(pageRequest, bookOrder);
         }
@@ -169,6 +150,38 @@ public class BookService {
 
         }
         return bookPage;
+    }
+
+    private Page<Book> getBooksQueryFilter(String title, String author, String startDate, String endDate, PageRequest pageRequest, Order<Book> bookOrder) {
+        Page<Book> bookPage;
+        var parsedStarDate = Objects.isNull(startDate)? null: LocalDate.parse(startDate);
+        var parsedEndDate = Objects.isNull(endDate)? null: LocalDate.parse(endDate);
+
+        if(startDate != null && endDate != null && title != null && author != null) {
+            bookPage = bookRepository.findBookPublishDateBetweenAndBookAuthorAndBookTitle(author, title, parsedStarDate, parsedEndDate, pageRequest, bookOrder);
+            return bookPage;
+
+        } else if (startDate != null && endDate != null && title != null) {
+            bookPage = bookRepository.findBookPublishDateBetweenAndBookTitle(title, parsedStarDate, parsedEndDate, pageRequest, bookOrder);
+            return bookPage;
+
+        }else if (startDate != null && endDate != null && author != null) {
+            bookPage = bookRepository.findBookPublishDateBetweenAndBookAuthor(author, parsedStarDate, parsedEndDate, pageRequest, bookOrder);
+            return bookPage;
+        }
+
+        else if(startDate != null && endDate != null) {
+
+            bookPage = bookRepository.findBookPublishDateBetween(parsedStarDate, parsedEndDate, pageRequest, bookOrder);
+            return bookPage;
+        }
+        else if(author != null && title != null)  {
+            bookPage = bookRepository.findBookTitleAndBookAuthorIgnoreCasePage(title, author, pageRequest, bookOrder);
+            return bookPage;
+        }
+
+
+        return null;
     }
 
     private static List<BookResponse> getBookResponseList(Page<Book> booksByQuery) {
