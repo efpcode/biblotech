@@ -1,10 +1,7 @@
 package biblotech.dto;
 
 import biblotech.rules.*;
-import jakarta.json.bind.annotation.JsonbDateFormat;
 import jakarta.validation.constraints.*;
-
-import java.time.LocalDate;
 
 public record CreateBook(
         @ValidBookTitle @NotBlank

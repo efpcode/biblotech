@@ -15,7 +15,7 @@ public class ValidBookTitleValidator implements ConstraintValidator<ValidBookTit
             return false;
         }
 
-        if (title.isEmpty()) {
+        if (title.trim().isEmpty()) {
             constraintValidatorContext.buildConstraintViolationWithTemplate("Title cannot be empty").addPropertyNode("title").addConstraintViolation();
             return false;
         }
