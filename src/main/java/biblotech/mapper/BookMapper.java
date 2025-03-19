@@ -50,7 +50,7 @@ public class BookMapper {
             book.setBookAuthor(bookUpdate.author());
         }
         if (bookUpdate.isbn() != null && !bookUpdate.isbn().trim().isEmpty()) {
-            book.setBookIsbn(bookUpdate.isbn());
+            book.setBookIsbn(ISBNMapper.mapToBook(bookUpdate.isbn()));
         }
         if (bookUpdate.description() != null && !bookUpdate.description().trim().isEmpty()) {
             book.setBookDescription(bookUpdate.description());

@@ -17,6 +17,6 @@ public record UpdateBook(
         @ValidBookPublishedYear @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}")  @NotNull
         String publishedYear,
 
-        @ValidBookAuthor @NotNull @Positive
+        @ValidateBookPages @NotNull @Positive
         String pages
         ) {}

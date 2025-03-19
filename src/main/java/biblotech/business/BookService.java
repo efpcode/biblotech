@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static biblotech.mapper.BookMapper.fromUpdateBook;
 import static biblotech.mapper.BookMapper.mapToBook;
 
 @ApplicationScoped
@@ -40,6 +41,9 @@ public class BookService {
 
 
 
+    // Crud Sessions
+
+    // Insert
     public Book createBook(CreateBook book) {
         var newBook = mapToBook(book);
         if (getBookByISBN(newBook.getBookIsbn()).isPresent() || getBookAuthorAndTitle(newBook).isPresent() ) {
@@ -48,12 +52,49 @@ public class BookService {
         }
         newBook =  bookRepository.insert(newBook);
         return newBook;
+    }
+    // Update
+
+    public Book updateBook(UpdateBook bookUpdate, Long id) {
+        var book = bookRepository.findById(id);
+
+        if (book.isEmpty()) {
+            throw new BookNotFound("Book with id: " + id + " was not found in database");
+        }
+        var updateBook = fromUpdateBook(book.get(), bookUpdate);
+        bookRepository.update(updateBook);
+        return updateBook;
 
     }
+
+
+
+
+    // General Getter methods
 
     public Optional<Book> getBookAuthorAndTitle(Book book){
         return bookRepository.getBookTitleAndBookAuthor(book.getBookTitle(), book.getBookAuthor());
     }
+
+
+    public BookResponse getBookById(Long id) {
+        return bookRepository.findById(id)
+                .map(BookResponse::new)
+                .orElseThrow(() -> new BookNotFound("Book with id " + id + " not found"));
+    }
+
+    public Optional<Book> getBookByISBN(String bookISBN) {
+        return bookRepository.findByBookIsbn(bookISBN);
+    }
+
+    public BookResponse getOneBookByISBN(String bookISBN){
+        return getBookByISBN(bookISBN)
+                .map(BookResponse::new)
+                .orElseThrow(() -> new BookNotFound("Book with ISBN " + bookISBN + " not found"));
+
+    }
+
+    // Search and Filtering by Author, Title and Date Ranges.
 
     public SortedBookPageResponse getBookBySearchQuery(
             String title,
@@ -74,32 +115,17 @@ public class BookService {
             throw new  BookNotFound("No books found!");
         }else {
             List<BookResponse> booksListResponses = getBookResponseList(bookPage);
-
             return new SortedBookPageResponse(new BookListResponse(booksListResponses), bookPage.numberOfElements(), bookPage.totalPages());
         }
 
-
-        }
-
-
-
-
-    public BookResponse getBookById(Long id) {
-       return bookRepository.findById(id)
-                .map(BookResponse::new)
-                .orElseThrow(() -> new BookNotFound("Book with id " + id + " not found"));
     }
 
-    public Optional<Book> getBookByISBN(String bookISBN) {
-        return bookRepository.findByBookIsbn(bookISBN);
-    }
 
-    public BookResponse getOneBookByISBN(String bookISBN){
-        return getBookByISBN(bookISBN)
-                .map(BookResponse::new)
-                .orElseThrow(() -> new BookNotFound("Book with ISBN " + bookISBN + " not found"));
 
-    }
+
+
+
+    // General Search for with sort capabilities.
 
     public SortedBookPageResponse getBooksSorted(String author, String title, String sortBy, String sortOrder , Long pageNumber, Integer pageSize) {
         Order<Book> bookOrder;
@@ -124,6 +150,8 @@ public class BookService {
         return new SortedBookPageResponse(bookListResponse, bookPage.numberOfElements(), bookPage.totalPages());
 
     }
+
+
 
     // Helper methods
 

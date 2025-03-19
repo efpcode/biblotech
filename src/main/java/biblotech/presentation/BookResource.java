@@ -92,9 +92,24 @@ public class BookResource {
         log.info("Book created: " + newBook);
         return Response
                 .status(Response.Status.CREATED)
-                .header("Location", "/api/books/" + newBook.getBookID())
+                .header("Location /api/books/", newBook.getBookID())
                 .build();
 
+    }
+
+    @PUT
+    @Path("{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateBook(@Valid UpdateBook book,  @PathParam("id") Long id) {
+        if (book == null) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        Book updateBook = bookService.updateBook(book, id);
+        log.info("Book updated with the following: " + updateBook);
+        return Response
+                .status(Response.Status.OK)
+                .header("Location /api/books/", id).build();
     }
 
 
