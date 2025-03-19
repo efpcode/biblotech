@@ -31,8 +31,8 @@ public class BookMapper {
         newBook.setBookAuthor(book.author());
         newBook.setBookIsbn(ISBNMapper.mapToBook(book.isbn()));
         newBook.setBookDescription(book.description());
-        newBook.setBookPublishDate(book.bookPublishDate());
-        newBook.setBookPagesNumber(book.bookPagesNumber());
+        newBook.setBookPublishDate(YearMapper.getYearFromString(book.publishedYear()));
+        newBook.setBookPagesNumber(PagesMapper.mapToLong(book.pages()));
         return newBook;
 
     }

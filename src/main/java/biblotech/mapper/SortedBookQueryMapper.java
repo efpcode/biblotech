@@ -24,7 +24,7 @@ public class SortedBookQueryMapper {
             case "author" -> "bookAuthor";
             case "isbn" -> "bookIsbn";
             case "description" -> "bookDescription";
-            case "pages" -> "bookPagesNumber";
+            case "pages" -> "pages";
             case "published" -> "bookPublishDate";
             default -> sortBy;
         };

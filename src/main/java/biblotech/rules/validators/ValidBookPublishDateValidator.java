@@ -16,7 +16,12 @@ public class ValidBookPublishDateValidator implements ConstraintValidator<ValidB
     public boolean isValid(LocalDate localDate, ConstraintValidatorContext constraintValidatorContext) {
 
         if(localDate == null) {
-            constraintValidatorContext.buildConstraintViolationWithTemplate("Publication Date cannot be null").addPropertyNode("bookPublishDate").addConstraintViolation();
+            constraintValidatorContext.buildConstraintViolationWithTemplate("Publication Date cannot be null").addConstraintViolation();
+            return false;
+        }
+
+        if(localDate.toString().trim().isEmpty()) {
+            constraintValidatorContext.buildConstraintViolationWithTemplate("Date cannot be empty").addConstraintViolation();
             return false;
         }
 
@@ -25,7 +30,7 @@ public class ValidBookPublishDateValidator implements ConstraintValidator<ValidB
             return true;
         }
 
-        constraintValidatorContext.buildConstraintViolationWithTemplate("Publication Date is not within the range of valid date 1450 to present").addPropertyNode("bookPublishDate").addConstraintViolation();
+        constraintValidatorContext.buildConstraintViolationWithTemplate("Publication Date is not within the range of valid date 1440 to present").addConstraintViolation();
 
 
 

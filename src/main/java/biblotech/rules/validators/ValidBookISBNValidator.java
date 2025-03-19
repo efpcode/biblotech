@@ -13,6 +13,7 @@ public class ValidBookISBNValidator implements ConstraintValidator<ValidBookISBN
     public boolean isValid(String isbnDigits, ConstraintValidatorContext constraintValidatorContext) {
         if(isbnDigits == null || isbnDigits.isEmpty()){
             constraintValidatorContext.buildConstraintViolationWithTemplate("ISBN number cannot be empty").addPropertyNode("isbn").addConstraintViolation();
+            return false;
         }
 
         if(!(isValidLengthOfISBN(isbnDigits))){

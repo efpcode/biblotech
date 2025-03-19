@@ -9,9 +9,13 @@ public class ValidBookAuthorValidator implements ConstraintValidator<ValidBookAu
     @Override
     public boolean isValid(String bookAuthor, ConstraintValidatorContext constraintValidatorContext) {
 
-        if (bookAuthor.isBlank()) {
+        if (bookAuthor == null) {
             constraintValidatorContext.buildConstraintViolationWithTemplate("Book Author cannot be blank or null").addPropertyNode("author").addConstraintViolation();
             return false;
+        }
+
+        if(bookAuthor.isEmpty()){
+            constraintValidatorContext.buildConstraintViolationWithTemplate("Book Author cannot be empty").addPropertyNode("author").addConstraintViolation();
         }
 
         if(isAuthorValid(bookAuthor)) {
@@ -22,6 +26,9 @@ public class ValidBookAuthorValidator implements ConstraintValidator<ValidBookAu
     }
 
     private boolean isAuthorValid(String authorName){
+        if(authorName.trim().isEmpty()){
+            return false;
+        }
         return Character.isUpperCase(authorName.charAt(0));
 
     }
