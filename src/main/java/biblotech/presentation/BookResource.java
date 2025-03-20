@@ -108,8 +108,6 @@ public class BookResource {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-
-
         var oldBook  = bookService.getBook(id);
         var oldBookUpdate = mapToUpdateOrPatchBook(oldBook, book);
 
@@ -156,6 +154,16 @@ public class BookResource {
                 .status(Response.Status.OK)
                 .header("Location /api/books/", id)
                 .build();
+    }
+
+    @DELETE
+    @Path("{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteBook(@PathParam("id") Long id) {
+        bookService.deleteBook(id);
+        return Response.status(Response.Status.NO_CONTENT).entity("Deletion_Event_Performed").build();
+
     }
 
 }

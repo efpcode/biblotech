@@ -107,12 +107,12 @@ public class ValidPatchBookValidator implements ConstraintValidator<ValidPatchBo
             context.buildConstraintViolationWithTemplate("isbn is empty").addConstraintViolation();
         }
 
-        if(patchBook.getIsbn().length() != 10 || patchBook.getIsbn().length() != 13) {
+        if(patchBook.getIsbn().length() != 10 && patchBook.getIsbn().length() != 13) {
             isValid = false;
             context.buildConstraintViolationWithTemplate("isbn is invalid expected length of 10 or 13").addConstraintViolation();
         }
 
-        if(!isValidISBN10(patchBook.getIsbn()) || !isValidISBN13(patchBook.getIsbn())) {
+        if(!isValidISBN10(patchBook.getIsbn()) && !isValidISBN13(patchBook.getIsbn())) {
             isValid = false;
             context.buildConstraintViolationWithTemplate("isbn is does not pass digit verification").addConstraintViolation();
 
@@ -137,7 +137,7 @@ public class ValidPatchBookValidator implements ConstraintValidator<ValidPatchBo
         sum = onlyDigits.getLast().equals("X") ? sum + 10 : sum + Integer.parseInt(onlyDigits.getLast());
 
 
-        return sum % 11 ==0;
+        return sum % 11 == 0;
 
     }
 

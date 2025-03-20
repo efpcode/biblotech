@@ -80,6 +80,18 @@ public class BookService {
         return bookPatched;
     }
 
+    // Delete
+
+    public void deleteBook(Long id) {
+        var book = bookRepository.findById(id);
+        if (book.isEmpty()) {
+            throw new BookNotFound("Book with id: " + id + " was not found in database");
+        }
+        bookRepository.delete(book.get());
+
+
+    }
+
 
 
 
