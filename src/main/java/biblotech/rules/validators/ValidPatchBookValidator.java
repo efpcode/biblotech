@@ -18,19 +18,19 @@ public class ValidPatchBookValidator implements ConstraintValidator<ValidPatchBo
             isValid = false;
         }
 
-        if (patchBook.title() != null) {
+        if (patchBook.getTitle()!= null) {
 
-            if(patchBook.title().trim().isEmpty()) {
+            if(patchBook.getTitle().trim().isEmpty()) {
                 isValid = false;
                 context.buildConstraintViolationWithTemplate("Title cannot be empty").addConstraintViolation();
             }
 
-            if(!isFirstLetterUppercase(patchBook.title())) {
+            if(!isFirstLetterUppercase(patchBook.getTitle())) {
                 isValid = false;
                 context.buildConstraintViolationWithTemplate("First letter of title must be uppercase").addConstraintViolation();
 
             }
-            if(!isTitleValid(patchBook.title())) {
+            if(!isTitleValid(patchBook.getTitle())) {
                 isValid = false;
                 context.buildConstraintViolationWithTemplate("Title invalid contains unwanted characters").addConstraintViolation();
             }

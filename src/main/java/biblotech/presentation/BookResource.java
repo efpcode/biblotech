@@ -3,12 +3,16 @@ package biblotech.presentation;
 import biblotech.business.BookService;
 import biblotech.dto.*;
 import biblotech.entity.Book;
+import biblotech.mapper.BookMapper;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.java.Log;
+
+import static biblotech.mapper.BookMapper.fromUpdateOrPatchBook;
+import static biblotech.mapper.BookMapper.mapToUpdate;
 
 
 @Path("books")
@@ -101,16 +105,53 @@ public class BookResource {
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateBook(@Valid UpdateBook book,  @PathParam("id") Long id) {
+    public Response updateBook(@Valid UpdateBook book, @PathParam("id") Long id) {
         if (book == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
+
+
+
+        var oldBook  = bookService.getBook(id);
+        var oldBookUpdate = mapToUpdate(oldBook);
+
         Book updateBook = bookService.updateBook(book, id);
+        var newUpdateBook = mapToUpdate(updateBook);
+        System.out.println("Book "+ oldBookUpdate);
+        System.out.println("Book updated: " + newUpdateBook);
+
+        System.out.println("newUpdateBook.equals(book) answer: " + newUpdateBook.equals(oldBookUpdate));
+
+
+        if (newUpdateBook.equals(oldBookUpdate) || book.isAllFieldsEmpty()) {
+            log.info("No content change for Book update: " + updateBook);
+            return Response.status(Response.Status.NO_CONTENT).build();
+
+        }
         log.info("Book updated with the following: " + updateBook);
         return Response
                 .status(Response.Status.OK)
                 .header("Location /api/books/", id).build();
     }
+
+
+
+    @PATCH
+    @Path("{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response patchBook(@Valid PatchBook book, @PathParam("id") Long id) {
+        if (book == null) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        Book patchedBook = bookService.patchBook(book, id);
+        log.info("Book patched with the following: " + patchedBook);
+        return Response
+                .status(Response.Status.OK)
+                .header("Location /api/books/", id)
+                .build();
+    }
+
 
 
 

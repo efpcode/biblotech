@@ -14,7 +14,7 @@ public class ValidBookAuthorValidator implements ConstraintValidator<ValidBookAu
             return false;
         }
 
-        if(bookAuthor.isEmpty()){
+        if(bookAuthor.trim().isEmpty()){
             constraintValidatorContext.buildConstraintViolationWithTemplate("Book Author cannot be empty").addPropertyNode("author").addConstraintViolation();
         }
 

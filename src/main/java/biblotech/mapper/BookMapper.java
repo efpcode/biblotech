@@ -1,8 +1,9 @@
 package biblotech.mapper;
 
+import biblotech.dto.BookBaseFields;
 import biblotech.dto.BookResponse;
-import biblotech.dto.UpdateBook;
 import biblotech.dto.CreateBook;
+import biblotech.dto.UpdateBook;
 import biblotech.entity.Book;
 
 public class BookMapper {
@@ -38,28 +39,29 @@ public class BookMapper {
 
     }
 
-    public static Book fromUpdateBook(Book book, UpdateBook bookUpdate) {
+
+    public static Book fromUpdateOrPatchBook(Book book, BookBaseFields bookUpdate) {
         if (book == null || bookUpdate == null) {
             return null;
         }
 
-        if (bookUpdate.title() != null && !bookUpdate.title().trim().isEmpty()) {
-            book.setBookTitle(bookUpdate.title());
+        if (bookUpdate.getTitle() != null && !bookUpdate.getTitle().trim().isEmpty()) {
+            book.setBookTitle(bookUpdate.getTitle());
         }
-        if (bookUpdate.author() != null && !bookUpdate.author().trim().isEmpty()) {
-            book.setBookAuthor(bookUpdate.author());
+        if (bookUpdate.getAuthor() != null && !bookUpdate.getAuthor().trim().isEmpty()) {
+            book.setBookAuthor(bookUpdate.getAuthor());
         }
-        if (bookUpdate.isbn() != null && !bookUpdate.isbn().trim().isEmpty()) {
-            book.setBookIsbn(ISBNMapper.mapToBook(bookUpdate.isbn()));
+        if (bookUpdate.getIsbn()!= null && !bookUpdate.getIsbn().trim().isEmpty()) {
+            book.setBookIsbn(ISBNMapper.mapToBook(bookUpdate.getIsbn()));
         }
-        if (bookUpdate.description() != null && !bookUpdate.description().trim().isEmpty()) {
-            book.setBookDescription(bookUpdate.description());
+        if (bookUpdate.getDescription() != null && !bookUpdate.getDescription().trim().isEmpty()) {
+            book.setBookDescription(bookUpdate.getDescription());
         }
-        if (bookUpdate.publishedYear() != null && !bookUpdate.publishedYear().trim().isEmpty()) {
-            book.setBookPublishDate(YearMapper.getYearFromString(bookUpdate.publishedYear()));
+        if (bookUpdate.getPublishedYear() != null && !bookUpdate.getPublishedYear().trim().isEmpty()) {
+            book.setBookPublishDate(YearMapper.getYearFromString(bookUpdate.getPublishedYear()));
         }
-        if (bookUpdate.pages() != null && !bookUpdate.pages().trim().isEmpty()) {
-            book.setBookPagesNumber(PagesMapper.mapToLong(bookUpdate.pages()));
+        if (bookUpdate.getPages() != null && !bookUpdate.getPages().trim().isEmpty()) {
+            book.setBookPagesNumber(PagesMapper.mapToLong(bookUpdate.getPages()));
         }
 
         return book;
@@ -67,6 +69,17 @@ public class BookMapper {
     }
 
 
-
-
+    public static UpdateBook mapToUpdate (Book book){
+        if (book == null) {
+            return null;
+        }
+        var newBook = new UpdateBook();
+        newBook.setTitle(book.getBookTitle());
+        newBook.setAuthor(book.getBookAuthor());
+        newBook.setIsbn(book.getBookIsbn());
+        newBook.setDescription(book.getBookDescription());
+        newBook.setPublishedYear(String.valueOf(book.getBookPublishDate()));
+        newBook.setPages(String.valueOf(book.getBookPagesNumber()));
+        return newBook;
+    }
 }

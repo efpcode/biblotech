@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static biblotech.mapper.BookMapper.fromUpdateBook;
+import static biblotech.mapper.BookMapper.fromUpdateOrPatchBook;
 import static biblotech.mapper.BookMapper.mapToBook;
 
 @ApplicationScoped
@@ -61,10 +61,21 @@ public class BookService {
         if (book.isEmpty()) {
             throw new BookNotFound("Book with id: " + id + " was not found in database");
         }
-        var updateBook = fromUpdateBook(book.get(), bookUpdate);
+        var updateBook = fromUpdateOrPatchBook(book.get(), bookUpdate);
         bookRepository.update(updateBook);
         return updateBook;
 
+    }
+
+    public Book patchBook(PatchBook bookPatch, Long id) {
+        var book = bookRepository.findById(id);
+        if (book.isEmpty()) {
+            throw new BookNotFound("Book with id: " + id + " was not found in database");
+        }
+        var bookPatched = fromUpdateOrPatchBook(book.get(), bookPatch);
+
+        bookRepository.update(bookPatched);
+        return bookPatched;
     }
 
 
@@ -81,6 +92,10 @@ public class BookService {
         return bookRepository.findById(id)
                 .map(BookResponse::new)
                 .orElseThrow(() -> new BookNotFound("Book with id " + id + " not found"));
+    }
+
+    public Book getBook(Long id) {
+        return bookRepository.findById(id).orElseThrow(() -> new BookNotFound("Book with id " + id + " not found"));
     }
 
     public Optional<Book> getBookByISBN(String bookISBN) {
