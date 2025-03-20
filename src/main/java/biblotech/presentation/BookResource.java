@@ -3,7 +3,6 @@ package biblotech.presentation;
 import biblotech.business.BookService;
 import biblotech.dto.*;
 import biblotech.entity.Book;
-import biblotech.mapper.BookMapper;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -11,8 +10,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.java.Log;
 
-import static biblotech.mapper.BookMapper.fromUpdateOrPatchBook;
-import static biblotech.mapper.BookMapper.mapToUpdate;
+import static biblotech.mapper.BookMapper.mapToUpdateOrPatchBook;
 
 
 @Path("books")
@@ -113,17 +111,13 @@ public class BookResource {
 
 
         var oldBook  = bookService.getBook(id);
-        var oldBookUpdate = mapToUpdate(oldBook);
+        var oldBookUpdate = mapToUpdateOrPatchBook(oldBook, book);
 
         Book updateBook = bookService.updateBook(book, id);
-        var newUpdateBook = mapToUpdate(updateBook);
-        System.out.println("Book "+ oldBookUpdate);
-        System.out.println("Book updated: " + newUpdateBook);
-
-        System.out.println("newUpdateBook.equals(book) answer: " + newUpdateBook.equals(oldBookUpdate));
+        var newUpdateBook = mapToUpdateOrPatchBook(updateBook, book);
 
 
-        if (newUpdateBook.equals(oldBookUpdate) || book.isAllFieldsEmpty()) {
+        if (newUpdateBook.equals(oldBookUpdate)) {
             log.info("No content change for Book update: " + updateBook);
             return Response.status(Response.Status.NO_CONTENT).build();
 

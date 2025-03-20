@@ -1,9 +1,6 @@
 package biblotech.mapper;
 
-import biblotech.dto.BookBaseFields;
-import biblotech.dto.BookResponse;
-import biblotech.dto.CreateBook;
-import biblotech.dto.UpdateBook;
+import biblotech.dto.*;
 import biblotech.entity.Book;
 
 public class BookMapper {
@@ -69,11 +66,20 @@ public class BookMapper {
     }
 
 
-    public static UpdateBook mapToUpdate (Book book){
-        if (book == null) {
+    public static BookBaseFields mapToUpdateOrPatchBook(Book book, Object dataType){
+        BookBaseFields newBook;
+
+        if (book == null || dataType == null) {
             return null;
         }
-        var newBook = new UpdateBook();
+
+        if (dataType instanceof UpdateBook) {
+            newBook = new UpdateBook();
+
+        }else {
+            newBook = new PatchBook();
+        }
+
         newBook.setTitle(book.getBookTitle());
         newBook.setAuthor(book.getBookAuthor());
         newBook.setIsbn(book.getBookIsbn());
@@ -82,4 +88,5 @@ public class BookMapper {
         newBook.setPages(String.valueOf(book.getBookPagesNumber()));
         return newBook;
     }
+
 }
