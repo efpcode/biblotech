@@ -67,6 +67,8 @@ public class BookService {
 
     }
 
+    // Patch
+
     public Book patchBook(PatchBook bookPatch, Long id) {
         var book = bookRepository.findById(id);
         if (book.isEmpty()) {

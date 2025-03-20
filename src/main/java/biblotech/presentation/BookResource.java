@@ -137,17 +137,25 @@ public class BookResource {
     public Response patchBook(@Valid PatchBook book, @PathParam("id") Long id) {
         if (book == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();
+
+        }else if(book.isAllFieldsEmpty()){
+            return Response.status(Response.Status.OK).entity("{message: Empty_Json_object_no_updates_were_performed, data:" + book).build();
         }
+
+        var oldBook  = bookService.getBook(id);
+        var oldBookUpdate = mapToUpdateOrPatchBook(oldBook, book);
+
         Book patchedBook = bookService.patchBook(book, id);
+        var newBook = mapToUpdateOrPatchBook(patchedBook, book);
+        if (newBook.equals(oldBookUpdate)) {
+            log.info("No content change for Book patched: " + patchedBook);
+            return Response.status(Response.Status.NO_CONTENT).entity("{message: No_update_was_performed, data: }"+ book).build();
+        }
         log.info("Book patched with the following: " + patchedBook);
         return Response
                 .status(Response.Status.OK)
                 .header("Location /api/books/", id)
                 .build();
     }
-
-
-
-
 
 }

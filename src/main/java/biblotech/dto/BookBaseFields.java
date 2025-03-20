@@ -11,7 +11,7 @@ public abstract class BookBaseFields {
    private String publishedYear;
    private String pages;
 
-    protected  BookBaseFields(String title, String author, String isbn, String description, String publishedYear, String pages) {
+    public BookBaseFields(String title, String author, String isbn, String description, String publishedYear, String pages) {
         this.title = title;
         this.author = author;
         this.isbn = isbn;
@@ -71,7 +71,7 @@ public abstract class BookBaseFields {
     }
 
     public boolean isAllFieldsEmpty(){
-        return this.getTitle().isEmpty() && this.getAuthor().isEmpty() && this.getIsbn().isEmpty()  && this.getDescription().isEmpty() && this.getPublishedYear().isEmpty() && this.getPages().isEmpty();
+        return title == null && author == null && isbn == null  && description==null && publishedYear ==null && pages ==null;
     }
 
 

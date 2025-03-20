@@ -21,10 +21,73 @@ public class PatchBook extends BookBaseFields {
             String publishedYear,
             String pages) {
         super(title, author, isbn, description, publishedYear, pages);
+
+
     }
 
     public PatchBook(){
         super();
+    }
+
+
+    @Override
+    public String getAuthor() {
+        return author;
+    }
+
+    @Override
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    @Override
+    public String getIsbn() {
+        return isbn;
+    }
+
+    @Override
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @Override
+    public String getPublishedYear() {
+        return publishedYear;
+    }
+
+    @Override
+    public void setPublishedYear(String publishedYear) {
+        this.publishedYear = publishedYear;
+    }
+
+    @Override
+    public String getPages() {
+        return pages;
+    }
+
+    @Override
+    public void setPages(String pages) {
+        this.pages = pages;
     }
 
     @Override
@@ -51,4 +114,12 @@ public class PatchBook extends BookBaseFields {
                 ", pages='" + pages + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean isAllFieldsEmpty() {
+        return title == null && author == null && isbn == null  && description==null && publishedYear ==null && pages ==null;
+
+    }
+
+
 }
