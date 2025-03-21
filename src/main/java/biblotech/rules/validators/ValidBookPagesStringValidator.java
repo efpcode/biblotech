@@ -13,7 +13,11 @@ public class ValidBookPagesStringValidator implements ConstraintValidator<Valida
         }
 
         try{
-            Long.parseLong(pages);
+           var digit = Long.parseLong(pages);
+           if (digit <= 0) {
+               constraintValidatorContext.buildConstraintViolationWithTemplate("Pages must be greater then 0. ").addConstraintViolation();
+               return false;
+           }
 
         }catch(NumberFormatException e){
             constraintValidatorContext.buildConstraintViolationWithTemplate("Invalid book pages").addPropertyNode("pages").addConstraintViolation();

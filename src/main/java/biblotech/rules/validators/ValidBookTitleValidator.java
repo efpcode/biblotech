@@ -7,6 +7,9 @@ import jakarta.validation.ConstraintValidatorContext;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static biblotech.rules.util.UtilValidatorHelpers.isFirstLetterUpperCaseChecker;
+import static biblotech.rules.util.UtilValidatorHelpers.isTitleValidFormatted;
+
 public class ValidBookTitleValidator implements ConstraintValidator<ValidBookTitle, String> {
     @Override
     public boolean isValid(String title, ConstraintValidatorContext constraintValidatorContext) {
@@ -20,33 +23,17 @@ public class ValidBookTitleValidator implements ConstraintValidator<ValidBookTit
             return false;
         }
 
-        if(!(isUpperCase(title.charAt(0)))){
+        if (!(isFirstLetterUpperCaseChecker(title))) {
             constraintValidatorContext.buildConstraintViolationWithTemplate("Title is not valid first letter must be uppercase").addPropertyNode("title").addConstraintViolation();
             return false;
         }
 
-        if(isTitleValidFormatted(title)){
+        if (isTitleValidFormatted(title)) {
             return true;
         }
 
         constraintValidatorContext.buildConstraintViolationWithTemplate("Title is not a valid format").addPropertyNode("title").addConstraintViolation();
 
         return false;
-    }
-
-
-    private boolean isUpperCase(int codePoint){
-        return Character.isUpperCase(codePoint);
-    }
-
-    private boolean isTitleValidFormatted(String title){
-        if(title.trim().isEmpty()){
-            return false;
-        }
-
-        String regex = "^[A-Za-z0-9\\s'\"-:;,.!?()&]+$";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(title);
-        return matcher.matches();
     }
 }

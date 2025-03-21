@@ -6,10 +6,8 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import static biblotech.rules.util.UtilValidatorHelpers.*;
+
 
 public class ValidPatchBookValidator implements ConstraintValidator<ValidPatchBook, PatchBook> {
     static LocalDate maxDate =  LocalDate.now();
@@ -86,17 +84,17 @@ public class ValidPatchBookValidator implements ConstraintValidator<ValidPatchBo
             }
 
             try{
-                Long.parseLong(patchBook.getPages());
+                var digit = Long.parseLong(patchBook.getPages());
+                if(digit <=0 ){
+                    isValid = false;
+                    context.buildConstraintViolationWithTemplate("Pages must be greater then 0. ").addConstraintViolation();
+                }
             }catch(NumberFormatException e){
                 isValid = false;
                 context.buildConstraintViolationWithTemplate("Pages is not a number").addConstraintViolation();
             }
 
         }
-
-
-
-
 
         return isValid;
     }
@@ -120,52 +118,7 @@ public class ValidPatchBookValidator implements ConstraintValidator<ValidPatchBo
         return isValid;
     }
 
-    // Validator helpers.
 
-    private boolean isValidISBN10(String isbnDigits) {
-        var onlyDigits = getValidDigitsForISBN10(isbnDigits);
-
-        int sum = 0;
-        int i;
-        int product;
-
-        for (i=0; i <= onlyDigits.size()-2; i++){
-            int digit = Integer.parseInt(onlyDigits.get(i));
-            product = digit * (onlyDigits.size() -i);
-            sum += product;
-        }
-        sum = onlyDigits.getLast().equals("X") ? sum + 10 : sum + Integer.parseInt(onlyDigits.getLast());
-
-
-        return sum % 11 == 0;
-
-    }
-
-    private boolean isValidISBN13(String isbnDigits) {
-        var onlyDigits = getValidDigitsForISBN13(isbnDigits);
-        int sum = 0;
-        int product;
-        int i;
-        for (i=0; i <= onlyDigits.size()-1; i++){
-            int digit = Integer.parseInt(onlyDigits.get(i));
-            product = (i % 2==0) ? digit * 1: digit * 3;
-            sum += product;
-        }
-        return sum % 10 ==0;
-
-    }
-
-    private List<String> getValidDigitsForISBN13(String isbnDigits) {
-        return Arrays.stream(isbnDigits.split(""))
-                .filter(s -> s.matches("\\d"))
-                .toList();
-    }
-
-    private static List<String> getValidDigitsForISBN10(String isbnDigits) {
-        return Arrays.stream(isbnDigits.split(""))
-                .filter(s -> s.matches("\\d|X"))
-                .toList();
-    }
 
     private boolean isAuthorValid(PatchBook patchBook, ConstraintValidatorContext context, boolean isValid) {
         if(patchBook.getAuthor().trim().isEmpty()) {
@@ -173,7 +126,7 @@ public class ValidPatchBookValidator implements ConstraintValidator<ValidPatchBo
             context.buildConstraintViolationWithTemplate("Author cannot be empty").addConstraintViolation();
 
         }
-        if(!isFirstLetterUppercase(patchBook.getAuthor())) {
+        if(!isFirstLetterUpperCaseChecker(patchBook.getAuthor())) {
             isValid = false;
             context.buildConstraintViolationWithTemplate("Author name first character must be uppercase").addConstraintViolation();
         }
@@ -186,12 +139,12 @@ public class ValidPatchBookValidator implements ConstraintValidator<ValidPatchBo
             context.buildConstraintViolationWithTemplate("Title cannot be empty").addConstraintViolation();
         }
 
-        if(!isFirstLetterUppercase(patchBook.getTitle())) {
+        if(!isFirstLetterUpperCaseChecker(patchBook.getTitle())) {
             isValid = false;
             context.buildConstraintViolationWithTemplate("First letter of title must be uppercase").addConstraintViolation();
 
         }
-        if(!isTitleValid(patchBook.getTitle())) {
+        if(!isTitleValidChecker(patchBook.getTitle())) {
             isValid = false;
             context.buildConstraintViolationWithTemplate("Title invalid contains unwanted characters").addConstraintViolation();
         }
@@ -199,20 +152,6 @@ public class ValidPatchBookValidator implements ConstraintValidator<ValidPatchBo
     }
 
 
-    private boolean isFirstLetterUppercase (String target) {
-        if (target.trim().isEmpty()) {
-            return false;
-        }
-        return  Character.isUpperCase(target.charAt(0));
 
-    }
-
-    private boolean isTitleValid(String target) {
-
-        String regex = "^[A-Za-z0-9\\s'\"-:;,.!?()&]+$";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(target);
-        return matcher.matches();
-    }
 
 }
