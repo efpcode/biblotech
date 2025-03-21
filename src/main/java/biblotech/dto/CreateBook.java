@@ -5,7 +5,7 @@ import biblotech.rules.*;
 import biblotech.rules.util.DateDeserializer;
 import jakarta.json.bind.annotation.JsonbTypeDeserializer;
 import jakarta.validation.constraints.*;
-
+@ValidCreateBook
 public record CreateBook(
         @ValidBookTitle @NotBlank
         String title,
