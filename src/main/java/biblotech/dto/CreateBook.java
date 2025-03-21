@@ -2,6 +2,7 @@ package biblotech.dto;
 
 import biblotech.rules.*;
 
+import jakarta.json.bind.annotation.JsonbDateFormat;
 import jakarta.validation.constraints.*;
 
 public record CreateBook(
@@ -19,7 +20,7 @@ public record CreateBook(
 
         @ValidBookPublishedYear
         @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}")
-        @NotNull
+        @NotNull @JsonbDateFormat(value = "yyyy-MM-dd")
         String publishedYear,
 
         @ValidateBookPages @Positive @NotNull
