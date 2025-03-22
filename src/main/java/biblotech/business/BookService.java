@@ -125,21 +125,23 @@ public class BookService {
 
     // Search and Filtering by Author, Title and Date Ranges.
 
-    public SortedBookPageResponse getBookBySearchQuery(
-            String title,
-            String author,
-            Long pageNumber,
-            Integer pageSize,
-            String sortBy,
-            String sortOrder,
-            String startDate,
-            String endDate) {
+    public SortedBookPageResponse getBookBySearchQuery(BookFilterQueryResponse searchQuery) {
 
-        SortedBooksQueryParams bookParams = getSortedBooksQueryParams(pageNumber, pageSize, sortBy, sortOrder);
+        SortedBooksQueryParams bookParams = getSortedBooksQueryParams(
+                searchQuery.getPageNumber(), searchQuery.getPageSize(),
+                searchQuery.getSortBy(),
+                searchQuery.getSortOrder()
+        );
         PageRequest pageRequest = PageRequest.ofPage(bookParams.pageNumber(), bookParams.pageSize(), true);
         Order<Book> bookOrder = getSortsDirection(bookParams);
 
-        Page<Book> bookPage = getBooksQueryFilter(title, author, startDate, endDate, pageRequest, bookOrder);
+        Page<Book> bookPage = getBooksQueryFilter(
+                searchQuery.getTitle(),
+                searchQuery.getAuthor(),
+                searchQuery.getStartDate(),
+                searchQuery.getEndDate(),
+                pageRequest, bookOrder
+        );
         if(!bookPage.hasContent()){
             throw new  BookNotFound("No books found!");
         }else {
@@ -156,22 +158,27 @@ public class BookService {
 
     // General Search for with sort capabilities.
 
-    public SortedBookPageResponse getBooksSorted(String author, String title, String sortBy, String sortOrder , Long pageNumber, Integer pageSize) {
+    public SortedBookPageResponse getBooksSorted(BookAuthorsQueryResponse searchSort) {
         Order<Book> bookOrder;
         Page<Book> bookPage;
 
-        SortedBooksQueryParams bookParams = getSortedBooksQueryParams(pageNumber, pageSize, sortBy, sortOrder);
+        SortedBooksQueryParams bookParams = getSortedBooksQueryParams(
+                searchSort.getPageNumber(),
+                searchSort.getPageSize(),
+                searchSort.getSortBy(),
+                searchSort.getSortOrder()
+        );
 
 
         PageRequest pageRequest = PageRequest.ofPage(bookParams.pageNumber(), bookParams.pageSize(), true);
 
         bookOrder = getSortsDirection(bookParams);
 
-        bookPage = getBooksPages(author, title, pageRequest, bookOrder);
+        bookPage = getBooksPages(searchSort.getAuthor(), searchSort.getTitle(), pageRequest, bookOrder);
 
         List<BookResponse> bookResponses = getBookResponseList(bookPage);
         if(bookResponses.isEmpty()) {
-            throw new BookNotFound("No books found for search with: "+ author+ " and "+title);
+            throw new BookNotFound("No books found for search with: "+ searchSort.getAuthor()+ " and "+searchSort.getTitle());
         }
 
         BookListResponse bookListResponse = new BookListResponse(bookResponses);
@@ -235,10 +242,14 @@ public class BookService {
         else if(author != null && title != null)  {
             bookPage = bookRepository.findBookTitleAndBookAuthorIgnoreCasePage(title, author, pageRequest, bookOrder);
             return bookPage;
+        }else{
+            throw new InvalidSearchQuery("Filtered Search Error:\n\n" +
+                    "Invalid search query for current endpoint please use: api/books/ for single search " +
+                    "\n Minimum parameters to pass without null values for filtered search is\n\t author:"+ author +  " title: " + title+ "\n\tOR\n\t" +
+                    "\tendDate: " + parsedStarDate + " and startDate: " + parsedEndDate);
         }
 
 
-        return null;
     }
 
     private static List<BookResponse> getBookResponseList(Page<Book> booksByQuery) {

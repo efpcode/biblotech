@@ -130,15 +130,15 @@ class BookServiceTest {
     @DisplayName("Book is fetched when getBook is called with correct id ")
     void bookIsFetchedWhenGetBookIsCalledWithCorrectId() {
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
-        Book book = bookService.getBook(1L);
-        assertNotNull(book);
-        assertThat(book.getBookID().equals(1L)).isTrue();
-        assertThat(book.getBookAuthor()).isEqualTo("Book Author");
-        assertThat(book.getBookTitle()).isEqualTo("Book Title1");
-        assertThat(book.getBookIsbn()).isEqualTo("0307278443");
-        assertThat(book.getBookDescription()).isEqualTo("Book Description");
-        assertThat(book.getBookPublishDate()).isEqualTo(LocalDate.of(1956, 1, 1));
-        assertThat(book.getBookPagesNumber()).isEqualTo(101L);
+        Book bookTest = bookService.getBook(1L);
+        assertNotNull(bookTest);
+        assertThat(bookTest.getBookID()).isEqualTo(1L);
+        assertThat(bookTest.getBookAuthor()).isEqualTo("Book Author");
+        assertThat(bookTest.getBookTitle()).isEqualTo("Book Title1");
+        assertThat(bookTest.getBookIsbn()).isEqualTo("0307278443");
+        assertThat(bookTest.getBookDescription()).isEqualTo("Book Description");
+        assertThat(bookTest.getBookPublishDate()).isEqualTo(LocalDate.of(1956, 1, 1));
+        assertThat(bookTest.getBookPagesNumber()).isEqualTo(101L);
 
     }
 
@@ -178,6 +178,20 @@ class BookServiceTest {
         assertThrows(BookNotFound.class, () -> bookService.getOneBookByISBN("9780306406157"));
 
     }
+
+
+    @Test
+    @DisplayName("Calling getBookAuthorAndTitle returns a book ")
+    void callingGetBookAuthorAndTitleReturnsABook() {
+
+        when(bookRepository.getBookTitleAndBookAuthor("Book Title10", "Book Author")).thenReturn(Optional.of(books().get(1)));
+        var bookNew = bookService.getBookAuthorAndTitle(books().get(1));
+
+        assertThat(bookNew).contains(books().get(1));
+    }
+
+
+    
     
     
 

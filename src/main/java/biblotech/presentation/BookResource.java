@@ -51,14 +51,8 @@ public class BookResource {
             ){
 
         return bookService.getBookBySearchQuery(
-               searchQuery.getTitle(),
-               searchQuery.getAuthor(),
-               searchQuery.getPageNumber(),
-               searchQuery.getPageSize(),
-               searchQuery.getSortBy(),
-               searchQuery.getSortOrder(),
-               searchQuery.getStartDate(),
-               searchQuery.getEndDate());
+               searchQuery
+        );
     }
 
 
@@ -72,12 +66,8 @@ public class BookResource {
             ){
 
           return bookService.getBooksSorted(
-                  searchSort.getAuthor(),
-                  searchSort.getTitle(),
-                  searchSort.getSortBy(),
-                  searchSort.getSortOrder(),
-                  searchSort.getPageNumber(),
-                  searchSort.getPageSize());
+                  searchSort
+          );
 
     }
 

@@ -6,6 +6,7 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 public class ValidDateRangeValidator implements ConstraintValidator<ValidDateRange, BookFilterQueryResponse> {
     private static final LocalDate NOT_BEFORE_DATE = LocalDate.of(1440, 1, 1);
@@ -19,8 +20,20 @@ public class ValidDateRangeValidator implements ConstraintValidator<ValidDateRan
             return true;
         }
 
-        var startDate = LocalDate.parse(searchFilter.getStartDate());
-        var endDate = LocalDate.parse(searchFilter.getEndDate());
+        LocalDate startDate = null;
+        LocalDate endDate = null;
+        try {
+            if(searchFilter.getStartDate() != null) {
+
+                startDate = LocalDate.parse(searchFilter.getStartDate());
+            }
+            if(searchFilter.getEndDate() != null) {
+                endDate = LocalDate.parse(searchFilter.getEndDate());
+            }
+        }catch (DateTimeParseException e){
+            constraintValidatorContext.buildConstraintViolationWithTemplate("Invalid date format expected yyyy-MM-dd").addConstraintViolation();
+            return false;
+        }
 
 
         if((endDate.isEqual(startDate))){
