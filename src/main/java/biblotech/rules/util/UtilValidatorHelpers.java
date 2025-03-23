@@ -13,7 +13,12 @@ public class UtilValidatorHelpers {
         if (target.trim().isEmpty()) {
             return false;
         }
-        return  Character.isUpperCase(target.charAt(0));
+        try{
+            Long.parseLong(target.trim());
+            return true;
+        }catch (NumberFormatException e){
+            return  Character.isUpperCase(target.charAt(0));
+        }
 
     }
 

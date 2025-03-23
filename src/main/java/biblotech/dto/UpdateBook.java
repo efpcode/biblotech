@@ -1,6 +1,8 @@
 package biblotech.dto;
 
 import biblotech.rules.*;
+import biblotech.rules.util.DateDeserializer;
+import jakarta.json.bind.annotation.JsonbTypeDeserializer;
 import jakarta.validation.constraints.Pattern;
 
 import java.util.Objects;
@@ -11,7 +13,7 @@ public class UpdateBook extends BookBaseFields {
     @ValidBookAuthor private String author;
     @ValidBookISBN private String isbn;
     @ValidBookDescription private String description;
-    @ValidBookPublishedYear @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}") private String publishedYear;
+    @ValidBookPublishedYear @JsonbTypeDeserializer(DateDeserializer.class) @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}") private String publishedYear;
     @ValidateBookPages private String pages;
 
 

@@ -1,6 +1,9 @@
 package biblotech.dto;
 
 import biblotech.rules.ValidPatchBook;
+import biblotech.rules.util.DateDeserializer;
+import jakarta.json.bind.annotation.JsonbTypeDeserializer;
+import jakarta.json.bind.serializer.JsonbDeserializer;
 
 import java.util.Objects;
 
@@ -10,6 +13,7 @@ public class PatchBook extends BookBaseFields {
     private String title;
     private String isbn;
     private String description;
+    @JsonbTypeDeserializer(DateDeserializer.class)
     private String publishedYear;
     private String pages;
 
