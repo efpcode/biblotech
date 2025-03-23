@@ -3,6 +3,7 @@ package biblotech.business;
 
 
 import biblotech.dto.BookAuthorsQueryResponse;
+import biblotech.dto.BookFilterQueryResponse;
 import biblotech.dto.BookResponse;
 import biblotech.dto.SortedBookPageResponse;
 import biblotech.entity.Book;
@@ -48,6 +49,9 @@ class BookServiceTest {
 
     @Mock
     private BookAuthorsQueryResponse searchSort;
+    
+    @Mock
+    private BookFilterQueryResponse searchFilter;
 
     @Mock
     private SortedBookPageResponse sortedBookPageResponse;
@@ -106,12 +110,12 @@ class BookServiceTest {
         book5.setBookDescription("Book Description");
         book6.setBookDescription("Book Description");
 
-        book1.setBookPublishDate(LocalDate.of(1956, 1, 1));
-        book2.setBookPublishDate(LocalDate.of(1956, 1, 1));
-        book3.setBookPublishDate(LocalDate.of(1956, 1, 1));
-        book4.setBookPublishDate(LocalDate.of(1956, 1, 1));
+        book1.setBookPublishDate(LocalDate.of(1916, 1, 1));
+        book2.setBookPublishDate(LocalDate.of(1926, 1, 1));
+        book3.setBookPublishDate(LocalDate.of(1936, 1, 1));
+        book4.setBookPublishDate(LocalDate.of(1946, 1, 1));
         book5.setBookPublishDate(LocalDate.of(1956, 1, 1));
-        book6.setBookPublishDate(LocalDate.of(1956, 1, 1));
+        book6.setBookPublishDate(LocalDate.of(1966, 1, 1));
 
         book1.setBookPagesNumber(101L);
         book2.setBookPagesNumber(201L);
@@ -336,11 +340,6 @@ class BookServiceTest {
 
 
          assertThrows(InvalidSearchQuery.class, () -> bookService.getBooksPages("","",pageRequest, bookOrder));
-
-
-
-
-
         }
 
         @Test
@@ -352,14 +351,119 @@ class BookServiceTest {
             }).getMessage().matches("Page corrupted found!: null");
         }
 
-
-
-
-
-
-
-
     }
+
+    @Nested
+    class FindBookByFilterQueriesTestSuite{
+
+        @Test
+        @DisplayName("getBooksQueryFilter_TwoParameterMust be passed as minimum or exception")
+        void getBooksQueryFilterTwoParameterMustBePassedAsMinimumOrException() {
+
+            PageRequest pageRequest = PageRequest.ofPage(1L, 2, true);
+            Order<Book> bookOrder =  Order.by( Sort.asc("bookTitle"));
+
+            assertThrows(InvalidSearchQuery.class, () -> {
+                bookService.getBooksQueryFilter(
+                        null,
+                        null,
+                        null,
+                        "2025-02-01",
+                        pageRequest,
+                        bookOrder
+                        );
+
+            }).getMessage().matches("api/books/");
+        }
+
+
+        @Test
+        @DisplayName("getBooksQueryFilter_PassingOnlyAuthorAndTitle")
+        void getBooksQueryFilterPassingOnlyAuthorAndTitle() {
+
+            List<Book> mockBooks =  List.of(books().get(1));
+            Page<Book> mockBookPage = Mockito.mock(Page.class);
+            Mockito.when(mockBookPage.content()).thenReturn(mockBooks);
+            Mockito.when(mockBookPage.totalPages()).thenReturn(1L);
+            Mockito.when(mockBookPage.numberOfElements()).thenReturn(1);
+
+            PageRequest pageRequest = PageRequest.ofPage(1L, 1, true);
+            Order<Book> bookOrder =  Order.by( Sort.asc("bookTitle"));
+
+
+            Mockito.when(bookRepository.findBookTitleAndBookAuthorIgnoreCasePage(
+                    eq("Title10"),
+                    eq("201"),
+                    any(PageRequest.class),
+                    any(Order.class)
+                    )).thenReturn(mockBookPage);
+
+            Page<Book> result = bookService.getBooksQueryFilter(
+                    "Title10",
+                    "201",
+                    null,
+                    null,
+                    pageRequest,
+                    bookOrder
+                    );
+
+            Assertions.assertNotNull(result);
+            Assertions.assertEquals(1, result.numberOfElements());
+            assertThat(result.totalPages()).isEqualTo(1);
+            assertThat(result.content()).isEqualTo(mockBooks);
+            Mockito.verify(bookRepository, Mockito.times(1))
+                    .findBookTitleAndBookAuthorIgnoreCasePage(
+                            eq("Title10"),
+                            eq("201"),
+                            any(PageRequest.class),
+                            any(Order.class)
+                            );
+
+
+
+
+        }
+
+
+        @Test
+        @DisplayName("getBooksQueryFilter Passing Only Start and End date")
+        void getBooksQueryFilterPassingOnlyStartAndEndDate() {
+
+            List<Book> mockBooks =   List.of(books().get(1));
+            Page<Book> mockBookPage = Mockito.mock(Page.class);
+            Mockito.when(mockBookPage.content()).thenReturn(mockBooks);
+            Mockito.when(mockBookPage.totalPages()).thenReturn(1L);
+            Mockito.when(mockBookPage.numberOfElements()).thenReturn(1);
+            PageRequest pageRequest = PageRequest.ofPage(1L, 1, true);
+            Order<Book> bookOrder =  Order.by( Sort.asc("bookTitle"));
+
+            Mockito.when(bookRepository.findBookPublishDateBetween(
+                    eq(LocalDate.parse("1916-01-01")),
+                    eq(LocalDate.parse("1936-01-01")),
+                    any(PageRequest.class),
+                    any(Order.class)
+            )).thenReturn(mockBookPage);
+
+            Page<Book> result = bookService.getBooksQueryFilter(null, null, "1916-01-01", "1936-01-01", pageRequest, bookOrder);
+
+            Assertions.assertNotNull(result);
+            Assertions.assertEquals(1, result.numberOfElements());
+            assertThat(result.totalPages()).isEqualTo(1);
+            assertThat(result.content()).isEqualTo(mockBooks);
+            Mockito.verify(bookRepository, Mockito.times(1)).findBookPublishDateBetween(
+                    eq(LocalDate.parse("1916-01-01")),
+                    eq(LocalDate.parse("1936-01-01")),
+                    any(PageRequest.class),
+                    any(Order.class)
+                    );
+
+        }
+        
+        
+        
+    }
+
+
 
 
 

@@ -18,6 +18,8 @@ import jakarta.inject.Inject;
 import biblotech.persistence.BookRepository;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -126,21 +128,21 @@ public class BookService {
 
     // Search and Filtering by Author, Title and Date Ranges.
 
-    public SortedBookPageResponse getBookBySearchQuery(BookFilterQueryResponse searchQuery) {
+    public SortedBookPageResponse getBookBySearchQuery(BookFilterQueryResponse searchFilter) {
 
         SortedBooksQueryParams bookParams = getSortedBooksQueryParams(
-                searchQuery.getPageNumber(), searchQuery.getPageSize(),
-                searchQuery.getSortBy(),
-                searchQuery.getSortOrder()
+                searchFilter.getPageNumber(), searchFilter.getPageSize(),
+                searchFilter.getSortBy(),
+                searchFilter.getSortOrder()
         );
         PageRequest pageRequest = PageRequest.ofPage(bookParams.pageNumber(), bookParams.pageSize(), true);
         Order<Book> bookOrder = getSortsDirection(bookParams);
 
         Page<Book> bookPage = getBooksQueryFilter(
-                searchQuery.getTitle(),
-                searchQuery.getAuthor(),
-                searchQuery.getStartDate(),
-                searchQuery.getEndDate(),
+                searchFilter.getTitle(),
+                searchFilter.getAuthor(),
+                searchFilter.getStartDate(),
+                searchFilter.getEndDate(),
                 pageRequest, bookOrder
         );
         if(!bookPage.hasContent()){
@@ -228,48 +230,48 @@ public class BookService {
 
     Page<Book> getBooksQueryFilter(String title, String author, String startDate, String endDate, PageRequest pageRequest, Order<Book> bookOrder) {
         Page<Book> bookPage;
-        var parsedStarDate = Objects.isNull(startDate)? null: LocalDate.parse(startDate);
-        var parsedEndDate = Objects.isNull(endDate)? null: LocalDate.parse(endDate);
+        var parsedStarDate = dateFormatConversionValidator(startDate);
+        var parsedEndDate = dateFormatConversionValidator(endDate);
 
         if(startDate != null && endDate != null && title != null && author != null) {
             bookPage = bookRepository.findBookPublishDateBetweenAndBookAuthorAndBookTitle(author, title, parsedStarDate, parsedEndDate, pageRequest, bookOrder);
-            return bookPage;
 
         } else if (startDate != null && endDate != null && title != null) {
             bookPage = bookRepository.findBookPublishDateBetweenAndBookTitle(title, parsedStarDate, parsedEndDate, pageRequest, bookOrder);
-            return bookPage;
 
         }else if (startDate != null && endDate != null && author != null) {
             bookPage = bookRepository.findBookPublishDateBetweenAndBookAuthor(author, parsedStarDate, parsedEndDate, pageRequest, bookOrder);
-            return bookPage;
         }
 
         else if(startDate != null && endDate != null) {
 
             bookPage = bookRepository.findBookPublishDateBetween(parsedStarDate, parsedEndDate, pageRequest, bookOrder);
-            return bookPage;
         }
         else if(author != null && title != null)  {
             bookPage = bookRepository.findBookTitleAndBookAuthorIgnoreCasePage(title, author, pageRequest, bookOrder);
-            return bookPage;
         }else{
             throw new InvalidSearchQuery("Filtered Search Error:\n\n" +
-                    "Invalid search query for current endpoint please use: api/books/ for single search " +
+                    "Invalid search query for current endpoint please use: api/books/ for single search criteria. " +
                     "\n Minimum parameters to pass without null values for filtered search is\n\t author:"+ author +  " title: " + title+ "\n\tOR\n\t" +
                     "\tendDate: " + parsedStarDate + " and startDate: " + parsedEndDate);
         }
 
+        if(bookPage==null){
+            throw new InvalidBookPage("Page corrupted found!:  "+ bookPage);
+        }
+        return bookPage;
+
 
     }
 
-    public  List<BookResponse> getBookResponseList(Page<Book> booksByQuery) {
+    public List<BookResponse> getBookResponseList(Page<Book> booksByQuery) {
         return booksByQuery.stream()
                 .map(BookMapper::mapToBookResponse)
                 .filter(Objects::nonNull)
                 .toList();
     }
 
-    public  SortedBooksQueryParams getSortedBooksQueryParams(Long pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+    public SortedBooksQueryParams getSortedBooksQueryParams(Long pageNumber, Integer pageSize, String sortBy, String sortOrder) {
         BookPagination bookPagination = BookPagination.Of(pageNumber, pageSize);
         String sorted = SortedBookQueryMapper.mapToSortedBookQuery(sortBy);
         String order = SortedBookOrderMapper.mapToOrderType(sortOrder);
@@ -280,6 +282,21 @@ public class BookService {
         return bookParams.sortOrder().equals("asc") ? Order.by(Sort.asc(bookParams.sortBy())) : Order.by(Sort.desc(bookParams.sortBy()));
 
     }
+
+
+
+    public LocalDate dateFormatConversionValidator(String date){
+        if(date == null || date.trim().isEmpty()){
+            return null;
+        }
+        try {
+            return LocalDate.parse(date.trim(), DateTimeFormatter.ISO_DATE);
+        }catch (DateTimeParseException e){
+            return null;
+        }
+    };
+
+
 
 
 
