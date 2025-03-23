@@ -4,6 +4,7 @@ import biblotech.dto.*;
 import biblotech.entity.Book;
 import biblotech.exceptions.BookDuplicationError;
 import biblotech.exceptions.BookNotFound;
+import biblotech.exceptions.InvalidBookPage;
 import biblotech.exceptions.InvalidSearchQuery;
 import biblotech.mapper.BookMapper;
 import biblotech.mapper.SortedBookOrderMapper;
@@ -177,6 +178,7 @@ public class BookService {
         bookPage = getBooksPages(searchSort.getAuthor(), searchSort.getTitle(), pageRequest, bookOrder);
 
         List<BookResponse> bookResponses = getBookResponseList(bookPage);
+
         if(bookResponses.isEmpty()) {
             throw new BookNotFound("No books found for search with: "+ searchSort.getAuthor()+ " and "+searchSort.getTitle());
         }
@@ -191,8 +193,9 @@ public class BookService {
 
     // Helper methods
 
-    private Page<Book> getBooksPages(String author, String title, PageRequest pageRequest, Order<Book> bookOrder) {
+    public Page<Book> getBooksPages(String author, String title, PageRequest pageRequest, Order<Book> bookOrder) {
         Page<Book> bookPage = null;
+
         if(author ==null && title ==null) {
             bookPage = bookRepository.findAll(pageRequest, bookOrder);
         }
@@ -209,14 +212,21 @@ public class BookService {
                     pageRequest,
                     bookOrder);
 
-        }else{
+        }
+
+        else{
             throw new InvalidSearchQuery("Invalid search query for root endpoint please use: api/books/search");
 
         }
+
+        if(bookPage == null) {
+            throw new InvalidBookPage("Page corrupted found!:  "+ bookPage);
+        }
+
         return bookPage;
     }
 
-    private Page<Book> getBooksQueryFilter(String title, String author, String startDate, String endDate, PageRequest pageRequest, Order<Book> bookOrder) {
+    Page<Book> getBooksQueryFilter(String title, String author, String startDate, String endDate, PageRequest pageRequest, Order<Book> bookOrder) {
         Page<Book> bookPage;
         var parsedStarDate = Objects.isNull(startDate)? null: LocalDate.parse(startDate);
         var parsedEndDate = Objects.isNull(endDate)? null: LocalDate.parse(endDate);
@@ -252,21 +262,26 @@ public class BookService {
 
     }
 
-    private static List<BookResponse> getBookResponseList(Page<Book> booksByQuery) {
+    public  List<BookResponse> getBookResponseList(Page<Book> booksByQuery) {
         return booksByQuery.stream()
                 .map(BookMapper::mapToBookResponse)
                 .filter(Objects::nonNull)
                 .toList();
     }
-    private static SortedBooksQueryParams getSortedBooksQueryParams(Long pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+
+    public  SortedBooksQueryParams getSortedBooksQueryParams(Long pageNumber, Integer pageSize, String sortBy, String sortOrder) {
         BookPagination bookPagination = BookPagination.Of(pageNumber, pageSize);
         String sorted = SortedBookQueryMapper.mapToSortedBookQuery(sortBy);
         String order = SortedBookOrderMapper.mapToOrderType(sortOrder);
         return new SortedBooksQueryParams(bookPagination.pageNumber(), bookPagination.pageSize(), sorted, order);
     }
 
-    private static Order<Book> getSortsDirection(SortedBooksQueryParams bookParams) {
+    public Order<Book> getSortsDirection(SortedBooksQueryParams bookParams) {
         return bookParams.sortOrder().equals("asc") ? Order.by(Sort.asc(bookParams.sortBy())) : Order.by(Sort.desc(bookParams.sortBy()));
+
     }
+
+
+
 
 }
