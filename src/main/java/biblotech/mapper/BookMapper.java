@@ -3,6 +3,7 @@ package biblotech.mapper;
 import biblotech.dto.*;
 import biblotech.entity.Book;
 
+
 public class BookMapper {
     private BookMapper() {}
 
@@ -88,5 +89,6 @@ public class BookMapper {
         newBook.setPages(String.valueOf(book.getBookPagesNumber()));
         return newBook;
     }
+
 
 }
