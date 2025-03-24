@@ -98,7 +98,7 @@ public class BookService {
 
 
 
-    // General Getter methods
+    // General Book fetcher methods
 
     public Optional<Book> getBookAuthorAndTitle(Book book){
         return bookRepository.getBookTitleAndBookAuthor(book.getBookTitle(), book.getBookAuthor());
@@ -165,6 +165,10 @@ public class BookService {
         Order<Book> bookOrder;
         Page<Book> bookPage;
 
+        if(searchSort == null){
+            throw new InvalidSearchQuery("Search Sort is null and can't be null to fetch Books");
+        }
+
         SortedBooksQueryParams bookParams = getSortedBooksQueryParams(
                 searchSort.getPageNumber(),
                 searchSort.getPageSize(),
@@ -178,12 +182,11 @@ public class BookService {
         bookOrder = getSortsDirection(bookParams);
 
         bookPage = getBooksPages(searchSort.getAuthor(), searchSort.getTitle(), pageRequest, bookOrder);
+        if(!bookPage.hasContent()){
+            throw new  BookNotFound("No books found! for search with " + searchSort.getAuthor() + " and " + searchSort.getTitle());
+        }
 
         List<BookResponse> bookResponses = getBookResponseList(bookPage);
-
-        if(bookResponses.isEmpty()) {
-            throw new BookNotFound("No books found for search with: "+ searchSort.getAuthor()+ " and "+searchSort.getTitle());
-        }
 
         BookListResponse bookListResponse = new BookListResponse(bookResponses);
 
@@ -234,6 +237,7 @@ public class BookService {
         var parsedEndDate = dateFormatConversionValidator(endDate);
 
         if(startDate != null && endDate != null && title != null && author != null) {
+
             bookPage = bookRepository.findBookPublishDateBetweenAndBookAuthorAndBookTitle(author, title, parsedStarDate, parsedEndDate, pageRequest, bookOrder);
 
         } else if (startDate != null && endDate != null && title != null) {
@@ -265,7 +269,7 @@ public class BookService {
     }
 
     public List<BookResponse> getBookResponseList(Page<Book> booksByQuery) {
-        return booksByQuery.stream()
+        return booksByQuery.content().stream()
                 .map(BookMapper::mapToBookResponse)
                 .filter(Objects::nonNull)
                 .toList();
