@@ -3,19 +3,21 @@ package biblotech.mapper;
 import biblotech.exceptions.InvalidSortOrderQueryException;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SortedBookOrderMapper {
     private  SortedBookOrderMapper() {
 
     }
 
-    static private String[] SORT_ORDER_FIELDS = {"asc","desc"};
+    private static final Set<String> SORT_ORDER_FIELDS = Set.of("asc","desc");
 
     public static String mapToOrderType(String sortedBookOrder) {
-        String order = sortedBookOrder.toLowerCase();
+        String order = sortedBookOrder.trim().toLowerCase();
 
-        if(!Arrays.asList(SORT_ORDER_FIELDS).contains(order)) {
-            throw new InvalidSortOrderQueryException("Invalid  sort   order: "+ order+"\n Expected values are" + Arrays.toString(SORT_ORDER_FIELDS));
+        if(!SORT_ORDER_FIELDS.contains(order)) {
+            throw new InvalidSortOrderQueryException("Invalid  sort   order: "+ order+"\n Expected values are" + (SORT_ORDER_FIELDS));
         }
 
         return order;

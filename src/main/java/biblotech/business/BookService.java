@@ -49,6 +49,7 @@ public class BookService {
     // Insert
     public Book createBook(CreateBook book) {
         var newBook = mapToBook(book);
+
         if (getBookByISBN(newBook.getBookIsbn()).isPresent() || getBookAuthorAndTitle(newBook).isPresent() ) {
             throw new BookDuplicationError(
                     "Book with: " + newBook.getBookIsbn() + " " + newBook.getBookAuthor() + " "+ newBook.getBookTitle() +" already exists");
@@ -101,6 +102,10 @@ public class BookService {
     // General Book fetcher methods
 
     public Optional<Book> getBookAuthorAndTitle(Book book){
+
+        if(book == null){
+            return Optional.empty();
+        }
         return bookRepository.getBookTitleAndBookAuthor(book.getBookTitle(), book.getBookAuthor());
     }
 

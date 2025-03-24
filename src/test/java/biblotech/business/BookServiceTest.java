@@ -3,6 +3,7 @@ package biblotech.business;
 
 import biblotech.dto.*;
 import biblotech.entity.Book;
+import biblotech.exceptions.BookDuplicationError;
 import biblotech.exceptions.BookNotFound;
 import biblotech.exceptions.InvalidBookPage;
 import biblotech.exceptions.InvalidSearchQuery;
@@ -21,7 +22,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,6 +33,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class BookServiceTest {
 
+    @Mock
     private Book book;
 
 
@@ -60,6 +61,9 @@ class BookServiceTest {
 
     @Mock
     private Order<Book> bookOrder;
+
+    @Mock
+    private BookMapper bookMapper;
 
 
     @InjectMocks
@@ -147,6 +151,15 @@ class BookServiceTest {
         book.setBookPagesNumber(101L);
     }
 
+    @Test
+    @DisplayName("Default Constructor Should Create BookService Instance")
+    void defaultConstructorShouldCreateInstance() {
+        BookService bookService = new BookService();
+
+        assertNotNull(bookService);
+    }
+
+
     @Nested
     class FindBookByISBNOrIDTestSuite {
 
@@ -229,6 +242,16 @@ class BookServiceTest {
 
             Mockito.verify(bookRepository, times(1))
                     .getBookTitleAndBookAuthor(eq("Book Title10"), eq("Book Author201"));
+        }
+
+        @Test
+        @DisplayName("getBookAuthorAndTitle null book returns optional empty")
+        void getBookAuthorAndTitleNullBookReturnsOptionalEmpty() {
+
+            var result = bookService.getBookAuthorAndTitle(null);
+            assertThat(result).isEmpty();
+
+            verify(bookRepository, never()).getBookTitleAndBookAuthor(anyString(), anyString());
         }
 
 
@@ -855,9 +878,8 @@ class BookServiceTest {
     }
 
 
-
     @Nested
-    class OneBookFetchTest{
+    class OneBookFetchTest {
 
         @Test
         @DisplayName("getOneBookByISBN return bookrespoonse if book found")
@@ -866,7 +888,7 @@ class BookServiceTest {
             BookResponse expectedBookResponse = BookMapper.mapToBookResponse(book);
 
             when(bookRepository.findByBookIsbn(eq(book.getBookIsbn()))).thenReturn(Optional.of(book));
-            var actual= bookService.getOneBookByISBN(book.getBookIsbn());
+            var actual = bookService.getOneBookByISBN(book.getBookIsbn());
 
             assertThat(actual).isEqualTo(expectedBookResponse);
             assertThat(actual)
@@ -878,7 +900,7 @@ class BookServiceTest {
                             BookResponse::description,
                             BookResponse::pages,
                             BookResponse::publishedYear
-                            )
+                    )
                     .containsExactly(
                             expectedBookResponse.id(),
                             expectedBookResponse.isbn(),
@@ -901,6 +923,30 @@ class BookServiceTest {
 
         }
 
+        @Test
+        @DisplayName("Valid Id and present id returns book response")
+        void validIdAndPresentIdReturnsBookResponse() {
+
+            Book book = books().get(0);
+            BookResponse expectedBookResponse = BookMapper.mapToBookResponse(book);
+
+            Mockito.when(bookRepository.findById(eq(1L))).thenReturn(Optional.of(book));
+
+            var actual = bookService.getBookById(1L);
+
+            assertThat(actual).isEqualTo(expectedBookResponse);
+            assertThat(actual).extracting(BookResponse::id, BookResponse::isbn).containsExactly(expectedBookResponse.id(), expectedBookResponse.isbn());
+
+        }
+
+
+        @Test
+        @DisplayName("Invalid Id or Book not present returns exception")
+        void invalidIdOrBookNotPresentReturnsException() {
+
+            assertThatThrownBy(() -> bookService.getBookById(7L)).isInstanceOf(BookNotFound.class).hasMessage("Book with id 7 not found");
+
+        }
 
 
     }
@@ -909,8 +955,298 @@ class BookServiceTest {
     @Nested
     class CRUDBookTests {
 
+        @Test
+        @DisplayName("Adding Book correctly returns book")
+        void addingBookCorrectlyReturnsBook() {
+
+
+            CreateBook createBook = new CreateBook(
+                    "BookTitle1001",
+                    "BookAuthor1001",
+                    "0123456789",
+                    "BookDescription1001",
+                    "1900-01-01",
+                    "1"
+            );
+
+            // Create another instance to simulate the inserted book
+            Book insertedBook = new Book();
+            insertedBook.setBookID(6L);
+            insertedBook.setBookTitle("BookTitle1001");
+            insertedBook.setBookAuthor("BookAuthor1001");
+            insertedBook.setBookIsbn("0123456789");
+            insertedBook.setBookDescription("BookDescription1001");
+            insertedBook.setBookPagesNumber(1L);
+            insertedBook.setBookPublishDate(LocalDate.parse("1900-01-01"));
+
+            // Mock the mapping behavior
+            var mappedBook = BookMapper.mapToBook(createBook);
+            mappedBook.setBookID(insertedBook.getBookID());
+
+            when(bookRepository.insert(any(Book.class))).thenReturn(mappedBook);
+
+
+            // Act: Call the method under test
+            Book result = bookService.createBook(createBook);
+
+            // Assert: Verify the result
+            assertThat(result).isEqualTo(insertedBook);
+            assertThat(result).extracting(Book::getBookIsbn).isEqualTo("0123456789");
+            assertThat(result).extracting(Book::getBookAuthor).isEqualTo("BookAuthor1001");
+            assertThat(result).extracting(Book::getBookTitle).isEqualTo("BookTitle1001");
+            verify(bookRepository, times(1)).insert(any(Book.class));
+        }
+
+        @Test
+        @DisplayName("Duplicate book throws BookDuplicationError with the same Isbn number")
+        void duplicateBookThrowsBookDuplicationErrorWithTheSameIsbnNumber() {
+            CreateBook createBook = new CreateBook(
+                    "BookTitle1001",
+                    "BookAuthor1001",
+                    "0123456789",
+                    "BookDescription1001",
+                    "1900-01-01",
+                    "1"
+            );
+
+            // Create another instance to simulate the inserted book
+            Book insertedBook = new Book();
+            insertedBook.setBookID(6L);
+            insertedBook.setBookTitle("BookTitle1001");
+            insertedBook.setBookAuthor("BookAuthor1001");
+            insertedBook.setBookIsbn("0123456789");
+            insertedBook.setBookDescription("BookDescription1001");
+            insertedBook.setBookPagesNumber(1L);
+            insertedBook.setBookPublishDate(LocalDate.parse("1900-01-01"));
+
+            // Mock the mapping behavior
+            var mappedBook = BookMapper.mapToBook(createBook);
+            mappedBook.setBookID(insertedBook.getBookID());
+
+
+            // Mock duplicate ISBN check
+            Mockito.when(bookService.getBookByISBN(eq("0123456789"))).thenReturn(Optional.of(mappedBook));
+
+            // Act & Assert
+            BookDuplicationError exception = assertThrows(BookDuplicationError.class, () ->
+                    bookService.createBook(createBook)
+            );
+
+            assertThat(exception.getMessage()).isEqualTo(
+                    "Book with: 0123456789 BookAuthor1001 BookTitle1001 already exists"
+            );
+
+            // Verify no insertion happens
+            Mockito.verify(bookRepository, Mockito.never()).insert(any(Book.class));
+        }
+
+
+        @Test
+        @DisplayName("DuplicationError thrown when title and author combination exists in database")
+        void duplicationErrorThrownWhenTitleAndAuthorCombinationExistsInDatabase() {
+            // Arrange: Create the input CreateBook object
+            CreateBook createBook = new CreateBook(
+                    "Books Title1",
+                    "Book Author101",
+                    "0123456789",
+                    "BookDescription101",
+                    "1900-01-01",
+                    "1"
+            );
+
+            // Create and populate the mocked mappedBook instance
+            Book mappedBook = new Book();
+            mappedBook.setBookTitle("Books Title1");
+            mappedBook.setBookAuthor("Book Author101");
+            mappedBook.setBookIsbn("0123456789");
+            mappedBook.setBookDescription("BookDescription101");
+            mappedBook.setBookPagesNumber(1L);
+            mappedBook.setBookPublishDate(LocalDate.parse("1900-01-01"));
+            mappedBook.setBookID(6L);
+
+
+            Book mockBook = new Book();
+            mockBook.setBookTitle("Books Title1");
+            mockBook.setBookAuthor("Book Author101");
+            mockBook.setBookIsbn("0123456789");
+            mockBook.setBookDescription("BookDescription101");
+            mockBook.setBookPagesNumber(1L);
+            mockBook.setBookPublishDate(LocalDate.parse("1900-01-01"));
+            mockBook.setBookID(6L);
+
+            Mockito.when(
+                            bookRepository
+                                    .getBookTitleAndBookAuthor(mappedBook.getBookTitle(), mappedBook.getBookAuthor()))
+                    .thenReturn(Optional.of(mockBook)).thenThrow(new BookDuplicationError());
+
+            assertThatThrownBy(() -> bookService.createBook(createBook)).isInstanceOf(BookDuplicationError.class)
+                    .hasMessage("Book with: 0123456789 Book Author101 Books Title1 already exists");
+
+
+            verify(bookRepository, Mockito.never()).insert(any(Book.class));
+
+
+        }
+
+
+        @Test
+        @DisplayName("Updating Book and invalid Id will throw exception")
+        void updatingBookAndInvalidIdWillThrowException() {
+
+            UpdateBook updateBook = new UpdateBook();
+            updateBook.setTitle("BookTitle101");
+            updateBook.setAuthor("BookAuthor101");
+            updateBook.setIsbn("0123456789");
+            updateBook.setPages("9");
+            updateBook.setDescription("Description101");
+
+            when(bookRepository.findById(anyLong())).thenReturn(Optional.empty())
+                    .thenThrow(BookNotFound.class);
+
+            assertThatThrownBy(() ->  bookService.updateBook(updateBook, 1L)).isInstanceOf(BookNotFound.class)
+                    .hasMessage("Book with id: 1 was not found in database");
+
+            verify(bookRepository, Mockito.never()).insert(any(Book.class));
+
+        }
+
+
+        @Test
+        @DisplayName("Updating book with valid id returns an Update Object")
+        void updatingBookWithValidIdReturnsAnUpdateObject() {
+            UpdateBook updateBook = new UpdateBook();
+            updateBook.setTitle("BookTitle101");
+            updateBook.setAuthor("BookAuthor101");
+            updateBook.setIsbn("0123456789");
+            updateBook.setPages("9");
+            updateBook.setDescription("Description101");
+            updateBook.setPublishedYear("1999-01-01");
+
+            Book oldBook = new Book();
+            oldBook.setBookTitle("BookTitle101");
+            oldBook.setBookAuthor("BookAuthor101");
+            oldBook.setBookIsbn("0123456789");
+            oldBook.setBookDescription("BookDescription101");
+            oldBook.setBookPagesNumber(1L);
+            oldBook.setBookPublishDate(LocalDate.parse("1900-01-01"));
+            oldBook.setBookID(6L);
+
+
+            Book mockBook = new Book();
+            mockBook.setBookTitle("BookTitle101");
+            mockBook.setBookAuthor("BookAuthor101");
+            mockBook.setBookIsbn("0123456789");
+            mockBook.setBookDescription("BookDescription101");
+            mockBook.setBookPagesNumber(9L);
+            mockBook.setBookPublishDate(LocalDate.parse("1999-01-01"));
+            mockBook.setBookID(6L);
+
+
+            when(bookRepository.findById(eq(6L))).thenReturn(Optional.of(mockBook));
+
+           var result = bookService.updateBook(updateBook, 6L);
+
+            verify(bookRepository, Mockito.times(1)).update(any(Book.class));
+
+
+            assertThat(result.getBookPagesNumber()).isNotEqualTo(oldBook.getBookPagesNumber());
+            assertThat(result.getBookPublishDate()).isNotEqualTo(oldBook.getBookPublishDate());
+
+        }
+
+        @Test
+        @DisplayName("patch with invalid or in existent id throws exception")
+        void patchWithInvalidOrInExistentIdThrowsException() {
+
+            PatchBook patchBook = new PatchBook();
+            patchBook.setTitle("BookTitle101");
+            patchBook.setAuthor("BookAuthor101");
+            patchBook.setIsbn("0123456789");
+            patchBook.setPages("9");
+            patchBook.setDescription("Description101");
+
+            when(bookRepository.findById(anyLong())).thenReturn(Optional.empty())
+                    .thenThrow(BookNotFound.class);
+
+            assertThatThrownBy(() ->  bookService.patchBook(patchBook, 1L)).isInstanceOf(BookNotFound.class)
+                    .hasMessage("Book with id: 1 was not found in database");
+
+            verify(bookRepository, Mockito.never()).insert(any(Book.class));
+
+        }
+
+
+        @Test
+        @DisplayName("patch with valid Id update a single field")
+        void patchWithValidIdUpdateASingleField() {
+
+            PatchBook patchBook = new PatchBook();
+            patchBook.setTitle("BookTitle201");
+
+
+            Book oldBook = new Book();
+            oldBook.setBookTitle("BookTitle101");
+            oldBook.setBookAuthor("BookAuthor101");
+            oldBook.setBookIsbn("0123456789");
+            oldBook.setBookDescription("BookDescription101");
+            oldBook.setBookPagesNumber(1L);
+            oldBook.setBookPublishDate(LocalDate.parse("1900-01-01"));
+            oldBook.setBookID(6L);
+
+
+            Book mockBook = new Book();
+            mockBook.setBookTitle("BookTitle201");
+            mockBook.setBookAuthor("BookAuthor101");
+            mockBook.setBookIsbn("0123456789");
+            mockBook.setBookDescription("BookDescription101");
+            mockBook.setBookPagesNumber(9L);
+            mockBook.setBookPublishDate(LocalDate.parse("1999-01-01"));
+            mockBook.setBookID(6L);
+
+
+            when(bookRepository.findById(anyLong())).thenReturn(Optional.of(mockBook));
+
+            var result = bookService.patchBook(patchBook, 6L);
+
+            verify(bookRepository, Mockito.times(1)).update(any(Book.class));
+
+            assertThat(result.getBookTitle()).isNotEqualTo(oldBook.getBookTitle());
+
+
+        }
+
+        @Test
+        @DisplayName("Deletion fails when Invalid id is provided throws exceptions ")
+        void deletionFailsWhenInvalidIdIsProvidedThrowsExceptions() {
+
+            when(bookRepository.findById(anyLong())).thenReturn(Optional.empty())
+                    .thenThrow(BookNotFound.class);
+
+            assertThatThrownBy(() ->  bookService.deleteBook(1L)).isInstanceOf(BookNotFound.class)
+                    .hasMessage("Book with id: 1 was not found in database");
+
+            verify(bookRepository, Mockito.never()).delete(any(Book.class));
+
+        }
+
+
+        @Test
+        @DisplayName("Deletion preformed with id")
+        void deletionPreformedWithId() {
+
+            List<Book> mockBooks = List.of(books().get(0),  books().get(1));
+            when(bookRepository.findById(anyLong())).thenReturn(Optional.of(mockBooks.get(0)));
+
+            Book book = mockBooks.get(0);
+            bookService.deleteBook(1L);
+            verify(bookRepository, Mockito.times(1)).delete(book);
+
+
+        }
 
 
     }
+
+
 
 }

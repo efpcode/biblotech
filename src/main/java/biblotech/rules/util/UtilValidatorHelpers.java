@@ -14,7 +14,7 @@ public class UtilValidatorHelpers {
             return false;
         }
         try{
-            Long.parseLong(target.trim());
+            Long.parseLong(target.trim().substring(0, 1));
             return true;
         }catch (NumberFormatException e){
             return  Character.isUpperCase(target.charAt(0));
