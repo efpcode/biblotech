@@ -6,6 +6,7 @@ import org.hibernate.annotations.Immutable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 public class SortedBookQueryMapper {
 
@@ -13,13 +14,13 @@ public class SortedBookQueryMapper {
 
     }
 
-    private static final String[] SORT_BY_FIELDS = { "title", "author", "isbn", "description", "pages", "published"};
+    private static final Set<String> SORT_BY_FIELDS = Set.of( "title", "author", "isbn", "description", "pages", "published");
     public static String mapToSortedBookQuery(String sortedBookQuery) {
 
         String sortBy = sortedBookQuery.trim().toLowerCase();
 
-        if (!Arrays.asList(SORT_BY_FIELDS).contains(sortBy)) {
-            throw new InvalidSortByQueryException("Invalid sort by: " + sortBy + ".\n Valid values are: " + Arrays.toString(SORT_BY_FIELDS));
+        if (!SORT_BY_FIELDS.contains(sortBy)) {
+            throw new InvalidSortByQueryException("Invalid sort by: " + sortBy + ".\n Valid values are: " + SORT_BY_FIELDS);
         }
 
         return switch (sortBy){
@@ -29,7 +30,7 @@ public class SortedBookQueryMapper {
             case "description" -> "bookDescription";
             case "pages" -> "pages";
             case "published" -> "bookPublishDate";
-            default -> sortBy;
+            default -> throw new InvalidSortByQueryException("Invalid sort by: " + sortBy);
         };
 
 

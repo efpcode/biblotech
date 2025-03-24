@@ -4,7 +4,7 @@ public class ISBNMapper {
     private ISBNMapper(){}
 
     public static String mapToBook(String isbn) {
-        if (isbn == null) {
+        if (isbn == null || isbn.trim().isEmpty()) {
             return null;
         }
 
