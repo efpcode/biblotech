@@ -24,7 +24,7 @@ class SortedBookQueryMapperTest {
 
         assertThat(SortedBookQueryMapper.mapToSortedBookQuery("title")).isEqualTo("bookTitle");
         assertThat(SortedBookQueryMapper.mapToSortedBookQuery("author")).isEqualTo("bookAuthor");
-        assertThat(SortedBookQueryMapper.mapToSortedBookQuery("pages")).isEqualTo("pages");
+        assertThat(SortedBookQueryMapper.mapToSortedBookQuery("pages")).isEqualTo("bookPagesNumber");
         assertThat(SortedBookQueryMapper.mapToSortedBookQuery("published")).isEqualTo("bookPublishDate");
         assertThat(SortedBookQueryMapper.mapToSortedBookQuery("description")).isEqualTo("bookDescription");
         assertThat(SortedBookQueryMapper.mapToSortedBookQuery("isbn")).isEqualTo("bookIsbn");
