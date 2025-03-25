@@ -123,12 +123,7 @@
             <version>1.4.0</version>
             <scope>test</scope>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.eclipse.microprofile.openapi</groupId>-->
-        <!--            <artifactId>microprofile-openapi-api</artifactId>-->
-        <!--            <version>4.0.1</version>-->
-        <!--            <scope>provided</scope>-->
-        <!--        </dependency>-->
+
     </dependencies>
 
     <build>
