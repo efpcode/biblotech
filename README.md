@@ -7,7 +7,7 @@ This is a school project that explores restful api design with Jakarta E11 and W
 Limitation of the API is that all responses or postings needs to be done with JSON. 
 
 
-## Json Schema (#jsonSchema)
+## Json Schema
 
 ```
 	{
@@ -44,7 +44,7 @@ Available search params are:
   * title  - Book title (optional)
   * pageNumber - Number of page(s) for a certain query (optional)
   * pageSize - Number of elements shown per page (optiionl)
-  * sortBy - Column available to order data by see [Json schema](/Json-Schema#jsonSchema). Default set to ``title``.
+  * sortBy - Column available to order data by see [Json Schema](#json-schema). Default set to ``title``.
   * sortOrder - The direction of the sorted data ascending ``asc`` or descending ``desc`` . Default set to ``asc``. 
 
 || Valid Search query for Authors:
