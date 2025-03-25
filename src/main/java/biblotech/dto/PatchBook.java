@@ -3,7 +3,6 @@ package biblotech.dto;
 import biblotech.rules.ValidPatchBook;
 import biblotech.rules.util.DateDeserializer;
 import jakarta.json.bind.annotation.JsonbTypeDeserializer;
-import jakarta.json.bind.serializer.JsonbDeserializer;
 
 import java.util.Objects;
 

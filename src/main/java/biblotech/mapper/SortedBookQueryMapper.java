@@ -28,7 +28,7 @@ public class SortedBookQueryMapper {
             case "author" -> "bookAuthor";
             case "isbn" -> "bookIsbn";
             case "description" -> "bookDescription";
-            case "pages" -> "pages";
+            case "pages" -> "bookPagesNumber";
             case "published" -> "bookPublishDate";
             default -> throw new InvalidSortByQueryException("Invalid sort by: " + sortBy);
         };

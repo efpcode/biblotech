@@ -803,6 +803,46 @@ class BookServiceTest {
             );
         }
 
+        @Test
+        @DisplayName("Wrongful pagination will throw exception")
+        void wrongfulPaginationWillThrowException() {
+
+            // Arrange
+            BookAuthorsQueryResponse searchSort = new BookAuthorsQueryResponse();
+            searchSort.setAuthor("Books Author101");
+            searchSort.setTitle(null);
+            searchSort.setPageNumber(2L);
+            searchSort.setSortBy("title");
+            searchSort.setSortOrder("asc");
+            searchSort.setPageSize(10);
+
+
+            // Mock repository response
+            List<Book> mockBooks = List.of();
+
+            PageRequest pageRequest = PageRequest.ofPage(2L, 10, true);
+            Order<Book> bookOrder = Order.by(Sort.asc("bookTitle"));
+
+
+            Page<Book> mockBookPage = Mockito.mock(Page.class);
+
+            Mockito.when(mockBookPage.hasContent()).thenReturn(false);
+
+
+            Mockito.when(bookRepository.findBookAuthorLike(
+                            eq("Books Author101"),
+                            eq(pageRequest),
+                            eq(bookOrder)))
+                    .thenReturn(mockBookPage).thenThrow(BookNotFound.class);
+
+            assertThatThrownBy(() -> bookService.getBooksSorted(searchSort)).isInstanceOf(BookNotFound.class)
+                    .hasMessage("No books found! for search with Books Author101 and null");
+
+
+
+            
+        }
+
     }
 
     @Nested
@@ -852,6 +892,42 @@ class BookServiceTest {
             assertThat(response.totalPages()).isEqualTo(mockBookPage.totalPages());
             assertThat(response.totalElements()).isEqualTo(mockBookPage.numberOfElements());
             assertThat(response.sortedBooks()).isEqualTo(expectedBookListResponse);
+
+        }
+
+        @Test
+        @DisplayName("Wrongful pagination throws exception")
+        void wrongfulPaginationThrowsException() {
+
+            BookFilterQueryResponse searchFilter = new BookFilterQueryResponse();
+            searchFilter.setAuthor("Books Author101");
+            searchFilter.setTitle("Books Title101");
+            searchFilter.setPageNumber(5L);
+            searchFilter.setSortBy("title");
+            searchFilter.setSortOrder("asc");
+            searchFilter.setPageSize(1);
+            searchFilter.setStartDate("1900-01-01");
+            searchFilter.setEndDate("1960-01-01");
+
+
+            PageRequest pageRequest = PageRequest.ofPage(5L, 1, true);
+            Order<Book> bookOrder = Order.by(Sort.asc("bookTitle"));
+
+            Page<Book> mockBookPage = Mockito.mock(Page.class);
+            Mockito.when(mockBookPage.hasContent()).thenReturn(false);
+
+
+            Mockito.when(bookRepository.findBookPublishDateBetweenAndBookAuthorAndBookTitle(
+                    eq("Books Author101"),
+                    eq("Books Title101"),
+                    eq(LocalDate.parse("1900-01-01")),
+                    eq(LocalDate.parse("1960-01-01")),
+                    eq(pageRequest),
+                    eq(bookOrder)
+            )).thenReturn(mockBookPage).thenThrow(BookNotFound.class);
+
+            assertThatThrownBy(() -> bookService.getBookBySearchQuery(searchFilter)).isInstanceOf(BookNotFound.class)
+                    .hasMessage("No books found!");
 
         }
 

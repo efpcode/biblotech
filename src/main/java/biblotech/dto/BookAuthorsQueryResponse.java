@@ -30,14 +30,6 @@ public  class BookAuthorsQueryResponse {
 
     }
 
-//    public BookAuthorsQueryResponse(String author, String title, Long pageNumber, String sortBy, String sortOrder, Integer pageSize) {
-//        this.author = author;
-//        this.title = title;
-//        this.pageNumber = pageNumber;
-//        this.sortBy = sortBy;
-//        this.sortOrder = sortOrder;
-//        this.pageSize = pageSize;
-//    }
 
     public String getAuthor() {
         return author;

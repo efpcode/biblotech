@@ -41,9 +41,6 @@ public class BookService {
     }
 
 
-
-
-
     // Crud Sessions
 
     // Insert
@@ -258,6 +255,7 @@ public class BookService {
         }
         else if(author != null && title != null)  {
             bookPage = bookRepository.findBookTitleAndBookAuthorIgnoreCasePage(title, author, pageRequest, bookOrder);
+            System.out.println(bookPage + "Look here");
         }else{
             throw new InvalidSearchQuery("Filtered Search Error:\n\n" +
                     "Invalid search query for current endpoint please use: api/books/ for single search criteria. " +

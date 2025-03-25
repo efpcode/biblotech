@@ -1,7 +1,5 @@
 package biblotech.mapper;
 
-import static org.junit.jupiter.api.Assertions.*;
-import biblotech.mapper.YearMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
