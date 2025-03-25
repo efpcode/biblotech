@@ -44,7 +44,7 @@ Available search params are:
   * title  - Book title (optional)
   * pageNumber - Number of page(s) for a certain query (optional)
   * pageSize - Number of elements shown per page (optiionl)
-  * sortBy - Column available to order data by see [Json schema](jsonScheam). Default set to ``title``.
+  * sortBy - Column available to order data by see [Json schema](jsonSchema). Default set to ``title``.
   * sortOrder - The direction of the sorted data ascending ``asc`` or descending ``desc`` . Default set to ``asc``. 
 
 // Valid Search query for Authors:
@@ -67,13 +67,13 @@ Available search params are:
 ``http://localhost:8080/api/books/search?author=Jane%20Austen&title=Emma&sortOrder=desc&pageSize=10&sortBy=pages&pageNumber=1&startDate=1600-01-01&endDate=1900-01-01``
 
 // Valid Search Less Verbose
-http://localhost:8080/api/books/search?author=Jane%20Austen&title=Emma&startDate=1600-01-01&endDate=1900-01-01
+``http://localhost:8080/api/books/search?author=Jane%20Austen&title=Emma&startDate=1600-01-01&endDate=1900-01-01``
 
 // Valid Search Author and Title
-http://localhost:8080/api/books/search?author=Jane%20Austen&title=Emma
+``http://localhost:8080/api/books/search?author=Jane%20Austen&title=Emma``
 
 // Valid Search Between Date
-http://localhost:8080/api/books/search?startDate=1600-01-01&endDate=1900-01-01
+``http://localhost:8080/api/books/search?startDate=1600-01-01&endDate=1900-01-01``
 
 The query for between date can also be combined with only search for title or author. 
 
