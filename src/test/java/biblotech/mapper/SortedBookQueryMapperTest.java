@@ -3,7 +3,6 @@ package biblotech.mapper;
 import biblotech.exceptions.InvalidSortByQueryException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.commons.annotation.Testable;
 
 import static org.assertj.core.api.Assertions.*;
 
