@@ -9,17 +9,16 @@ Limitation of the API is that all responses or postings needs to be done with JS
 
 ## Json Schema
 
-```
+```json
 	{
-				"author": "George Orwell",
-				"description": "A dystopian novel about a totalitarian regime that uses surveillance and thought control.",
-				"id": 2,
-				"isbn": "9780451524935",
-				"pages": 328,
-				"publishedYear": "1949-06-08",
-				"title": "1984"
-			}
-
+        "author": "George Orwell",
+        "description": "A dystopian novel about a totalitarian regime that uses surveillance and thought control.",
+        "id": 2,
+        "isbn": "9780451524935",
+        "pages": 328,
+        "publishedYear": "1949-06-08",
+        "title": "1984"
+}
 ```
 
 
